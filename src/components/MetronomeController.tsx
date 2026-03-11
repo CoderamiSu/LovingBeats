@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Play, Square, Plus, Minus } from "lucide-react";
+import { Play, Square, Plus, Minus, Palette, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { BeatIndicator } from "./BeatIndicator";
-import { PracticePromptCard } from "./PracticePromptCard";
 import { cn } from "@/lib/utils";
 import {
   Select,
@@ -15,11 +14,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+const COLOR_THEMES = {
+  lime: "100 85% 55%",
+  blue: "210 100% 66%",
+  pink: "330 100% 70%",
+  orange: "30 100% 60%",
+};
+
+const SOUND_PROFILES = {
+  classic: { accent: 1000, normal: 800, type: 'sine' as OscillatorType },
+  woodblock: { accent: 1500, normal: 1200, type: 'triangle' as OscillatorType },
+  electronic: { accent: 600, normal: 400, type: 'square' as OscillatorType },
+};
+
 export default function MetronomeController() {
   const [bpm, setBpm] = useState(120);
   const [timeSignature, setTimeSignature] = useState("4/4");
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentBeat, setCurrentBeat] = useState(0);
+  const [themeColor, setThemeColor] = useState<keyof typeof COLOR_THEMES>("lime");
+  const [soundProfile, setSoundProfile] = useState<keyof typeof SOUND_PROFILES>("classic");
 
   const audioContext = useRef<AudioContext | null>(null);
   const nextNoteTime = useRef(0.0);
@@ -32,30 +46,33 @@ export default function MetronomeController() {
 
     const osc = audioContext.current.createOscillator();
     const envelope = audioContext.current.createGain();
+    const profile = SOUND_PROFILES[soundProfile];
 
-    // Accent the first beat of the measure
-    osc.frequency.value = beatNumber % beatsPerMeasure === 0 ? 1000 : 800;
+    // Set sound parameters based on profile
+    osc.type = profile.type;
+    osc.frequency.value = beatNumber % beatsPerMeasure === 0 ? profile.accent : profile.normal;
     
     envelope.gain.value = 1;
     envelope.gain.exponentialRampToValueAtTime(1, time + 0.001);
-    envelope.gain.exponentialRampToValueAtTime(0.001, time + 0.1);
+    envelope.gain.exponentialRampToValueAtTime(0.001, time + (soundProfile === 'woodblock' ? 0.05 : 0.1));
 
     osc.connect(envelope);
     envelope.connect(audioContext.current.destination);
 
     osc.start(time);
     osc.stop(time + 0.1);
-  }, [beatsPerMeasure]);
+  }, [beatsPerMeasure, soundProfile]);
 
   const scheduler = useCallback(() => {
-    while (nextNoteTime.current < audioContext.current!.currentTime + 0.1) {
+    if (!audioContext.current) return;
+    
+    while (nextNoteTime.current < audioContext.current.currentTime + 0.1) {
       scheduleNote(beatNumber.current, nextNoteTime.current);
       
       const secondsPerBeat = 60.0 / bpm;
       nextNoteTime.current += secondsPerBeat;
       
       const currentLocalBeat = beatNumber.current % beatsPerMeasure;
-      // We use a small timeout to sync UI with audio
       setTimeout(() => setCurrentBeat(currentLocalBeat), 0);
       
       beatNumber.current++;
@@ -74,6 +91,9 @@ export default function MetronomeController() {
       setCurrentBeat(0);
       beatNumber.current = 0;
     } else {
+      if (audioContext.current.state === 'suspended') {
+        audioContext.current.resume();
+      }
       setIsPlaying(true);
       nextNoteTime.current = audioContext.current.currentTime;
       scheduler();
@@ -91,7 +111,10 @@ export default function MetronomeController() {
   };
 
   return (
-    <div className="max-w-md mx-auto w-full space-y-8 px-4 py-8">
+    <div 
+      className="max-w-md mx-auto w-full space-y-8 px-4 py-8"
+      style={{ '--primary': COLOR_THEMES[themeColor] } as React.CSSProperties}
+    >
       {/* Visual Indicator Area */}
       <div className="bg-card rounded-3xl p-6 shadow-2xl border border-primary/10">
         <BeatIndicator 
@@ -161,10 +184,11 @@ export default function MetronomeController() {
           </Button>
         </div>
 
-        {/* Settings */}
-        <div className="grid grid-cols-1 gap-4">
+        {/* Settings Grid */}
+        <div className="grid grid-cols-1 gap-3">
+          {/* Time Signature */}
           <div className="flex items-center justify-between p-4 bg-card rounded-2xl border border-primary/10">
-            <span className="text-lg font-bold text-secondary">Time Signature</span>
+            <span className="text-md font-bold text-secondary">Time Signature</span>
             <Select value={timeSignature} onValueChange={setTimeSignature}>
               <SelectTrigger className="w-24 bg-background border-none text-primary font-bold">
                 <SelectValue placeholder="Time" />
@@ -178,11 +202,45 @@ export default function MetronomeController() {
               </SelectContent>
             </Select>
           </div>
+
+          {/* Sound Profile */}
+          <div className="flex items-center justify-between p-4 bg-card rounded-2xl border border-primary/10">
+            <div className="flex items-center gap-2">
+              <Volume2 className="w-4 h-4 text-secondary" />
+              <span className="text-md font-bold text-secondary">Sound</span>
+            </div>
+            <Select value={soundProfile} onValueChange={(v) => setSoundProfile(v as any)}>
+              <SelectTrigger className="w-32 bg-background border-none text-primary font-bold capitalize">
+                <SelectValue placeholder="Sound" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="classic">Classic</SelectItem>
+                <SelectItem value="woodblock">Woodblock</SelectItem>
+                <SelectItem value="electronic">Electronic</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Theme Color */}
+          <div className="flex items-center justify-between p-4 bg-card rounded-2xl border border-primary/10">
+            <div className="flex items-center gap-2">
+              <Palette className="w-4 h-4 text-secondary" />
+              <span className="text-md font-bold text-secondary">Color</span>
+            </div>
+            <Select value={themeColor} onValueChange={(v) => setThemeColor(v as any)}>
+              <SelectTrigger className="w-32 bg-background border-none text-primary font-bold capitalize">
+                <SelectValue placeholder="Color" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="lime">Lime</SelectItem>
+                <SelectItem value="blue">Blue</SelectItem>
+                <SelectItem value="pink">Pink</SelectItem>
+                <SelectItem value="orange">Orange</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
-
-      {/* AI Practice Prompt */}
-      <PracticePromptCard bpm={bpm} timeSignature={timeSignature} />
 
       <footer className="text-center text-muted-foreground text-sm pt-8">
         Designed for little musicians • BeatBuddy v1.0
