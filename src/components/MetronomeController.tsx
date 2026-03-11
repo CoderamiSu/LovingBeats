@@ -70,7 +70,7 @@ export default function MetronomeController() {
   const [timeSignature, setTimeSignature] = useState("4/4");
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentBeat, setCurrentBeat] = useState(0);
-  const [themeColor, setThemeColor] = useState<keyof typeof COLOR_THEMES>("lime");
+  const [themeColor, setThemeColor] = useState<keyof typeof COLOR_THEMES>("zelda");
   const [soundProfile, setSoundProfile] = useState<keyof typeof SOUND_PROFILES>("classic");
 
   const audioContext = useRef<AudioContext | null>(null);

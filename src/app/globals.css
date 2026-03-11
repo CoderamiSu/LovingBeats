@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    --background: 95 18% 12%; /* #1D2518 */
+    --background: 140 40% 8%; /* Zelda Forest Green */
     --foreground: 95 20% 98%;
-    --card: 95 18% 15%;
+    --card: 140 40% 12%;
     --card-foreground: 95 20% 98%;
-    --popover: 95 18% 12%;
+    --popover: 140 40% 8%;
     --popover-foreground: 95 20% 98%;
-    --primary: 100 85% 55%; /* #6BEF2B */
-    --primary-foreground: 95 18% 12%;
-    --secondary: 110 71% 75%; /* #A2EC93 */
-    --secondary-foreground: 95 18% 12%;
-    --muted: 95 15% 25%;
+    --primary: 48 100% 50%; /* Zelda Triforce Gold */
+    --primary-foreground: 140 40% 8%;
+    --secondary: 100 50% 60%; /* Zelda Link Green */
+    --secondary-foreground: 140 40% 8%;
+    --muted: 140 30% 20%;
     --muted-foreground: 95 10% 70%;
-    --accent: 100 85% 55%;
-    --accent-foreground: 95 18% 12%;
+    --accent: 48 100% 50%;
+    --accent-foreground: 140 40% 8%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 95 15% 25%;
-    --input: 95 15% 25%;
-    --ring: 100 85% 55%;
+    --border: 140 30% 20%;
+    --input: 140 30% 20%;
+    --ring: 48 100% 50%;
     --radius: 1rem;
   }
 }
