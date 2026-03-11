@@ -61,26 +61,38 @@ export default function MetronomeController() {
   const timerID = useRef<number | null>(null);
   const beatsPerMeasure = parseInt(timeSignature.split("/")[0]);
 
-  const scheduleNote = useCallback((beatNumber: number, time: number) => {
+  // Use refs to track audio parameters for live updates in the scheduler loop
+  const bpmRef = useRef(bpm);
+  const beatsPerMeasureRef = useRef(beatsPerMeasure);
+  const soundProfileRef = useRef(soundProfile);
+
+  useEffect(() => {
+    bpmRef.current = bpm;
+    beatsPerMeasureRef.current = beatsPerMeasure;
+    soundProfileRef.current = soundProfile;
+  }, [bpm, beatsPerMeasure, soundProfile]);
+
+  const scheduleNote = useCallback((beatNum: number, time: number) => {
     if (!audioContext.current) return;
 
     const osc = audioContext.current.createOscillator();
     const envelope = audioContext.current.createGain();
-    const profile = SOUND_PROFILES[soundProfile];
+    const profile = SOUND_PROFILES[soundProfileRef.current];
 
     osc.type = profile.type;
-    osc.frequency.value = beatNumber % beatsPerMeasure === 0 ? profile.accent : profile.normal;
+    // Check if it's the accent beat (beat 0 of the measure)
+    osc.frequency.value = beatNum % beatsPerMeasureRef.current === 0 ? profile.accent : profile.normal;
     
     envelope.gain.value = 1;
     envelope.gain.exponentialRampToValueAtTime(1, time + 0.001);
-    envelope.gain.exponentialRampToValueAtTime(0.001, time + (soundProfile === 'woodblock' ? 0.05 : 0.1));
+    envelope.gain.exponentialRampToValueAtTime(0.001, time + (soundProfileRef.current === 'woodblock' ? 0.05 : 0.1));
 
     osc.connect(envelope);
     envelope.connect(audioContext.current.destination);
 
     osc.start(time);
     osc.stop(time + 0.1);
-  }, [beatsPerMeasure, soundProfile]);
+  }, []);
 
   const scheduler = useCallback(() => {
     if (!audioContext.current) return;
@@ -88,16 +100,17 @@ export default function MetronomeController() {
     while (nextNoteTime.current < audioContext.current.currentTime + 0.1) {
       scheduleNote(beatNumber.current, nextNoteTime.current);
       
-      const secondsPerBeat = 60.0 / bpm;
+      const secondsPerBeat = 60.0 / bpmRef.current;
       nextNoteTime.current += secondsPerBeat;
       
-      const currentLocalBeat = beatNumber.current % beatsPerMeasure;
+      const currentLocalBeat = beatNumber.current % beatsPerMeasureRef.current;
+      // Use setImmediate-like behavior with 0ms timeout for UI updates
       setTimeout(() => setCurrentBeat(currentLocalBeat), 0);
       
       beatNumber.current++;
     }
     timerID.current = window.setTimeout(scheduler, 25.0);
-  }, [bpm, beatsPerMeasure, scheduleNote]);
+  }, [scheduleNote]);
 
   const toggleMetronome = () => {
     if (!audioContext.current) {
