@@ -1,14 +1,11 @@
-
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Play, Square, Plus, Minus, Palette, Volume2, Music } from "lucide-react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { BeatIndicator } from "./BeatIndicator";
 import { cn } from "@/lib/utils";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import {
   Select,
   SelectContent,
@@ -42,11 +39,23 @@ const COLOR_THEMES = {
     card: "25 40% 13%",
     secondary: "35 80% 80%",
   },
-  pokemon: {
-    primary: "48 100% 50%",
-    background: "220 30% 12%",
-    card: "220 30% 16%",
-    secondary: "48 100% 70%",
+  ultraman: {
+    primary: "0 100% 50%", // Red
+    background: "220 40% 8%", // Dark Galaxy Blue
+    card: "220 40% 12%",
+    secondary: "0 0% 85%", // Silver
+  },
+  zelda: {
+    primary: "48 100% 50%", // Triforce Gold
+    background: "140 40% 8%", // Deep Forest Green
+    card: "140 40% 12%",
+    secondary: "100 50% 60%", // Link Green
+  },
+  minecraft: {
+    primary: "85 80% 50%", // Grass Block Green
+    background: "25 30% 10%", // Dirt Brown
+    card: "25 30% 14%",
+    secondary: "195 90% 65%", // Sky Blue
   },
 };
 
@@ -150,10 +159,6 @@ export default function MetronomeController() {
 
   const currentTheme = COLOR_THEMES[themeColor];
 
-  const pikachuImg = PlaceHolderImages.find(img => img.id === "pikachu");
-  const charizardImg = PlaceHolderImages.find(img => img.id === "charizard");
-  const mewtwoImg = PlaceHolderImages.find(img => img.id === "mewtwo");
-
   return (
     <div 
       className="w-full min-h-screen bg-background transition-colors duration-500 ease-in-out flex flex-col items-center relative overflow-hidden"
@@ -166,48 +171,6 @@ export default function MetronomeController() {
         '--ring': currentTheme.primary,
       } as React.CSSProperties}
     >
-      {/* Decorative Pokemon Images */}
-      {themeColor === "pokemon" && (
-        <>
-          <div className="absolute top-10 -left-10 opacity-40 animate-bounce transition-all duration-1000">
-            {pikachuImg && (
-              <Image 
-                src={pikachuImg.imageUrl} 
-                alt={pikachuImg.description} 
-                width={120} 
-                height={120} 
-                data-ai-hint={pikachuImg.imageHint}
-                className="rounded-full border-4 border-primary"
-              />
-            )}
-          </div>
-          <div className="absolute bottom-20 -right-10 opacity-30 animate-pulse transition-all duration-1000">
-            {charizardImg && (
-              <Image 
-                src={charizardImg.imageUrl} 
-                alt={charizardImg.description} 
-                width={150} 
-                height={150} 
-                data-ai-hint={charizardImg.imageHint}
-                className="rounded-full border-4 border-primary"
-              />
-            )}
-          </div>
-          <div className="absolute top-1/2 left-0 opacity-20 transition-all duration-1000 blur-sm">
-            {mewtwoImg && (
-              <Image 
-                src={mewtwoImg.imageUrl} 
-                alt={mewtwoImg.description} 
-                width={100} 
-                height={100} 
-                data-ai-hint={mewtwoImg.imageHint}
-                className="rounded-full"
-              />
-            )}
-          </div>
-        </>
-      )}
-
       {/* Themed Header */}
       <header className="w-full py-8 px-4 flex items-center justify-center gap-2 z-10">
         <div className="bg-primary p-2 rounded-xl transition-colors duration-500">
@@ -341,7 +304,9 @@ export default function MetronomeController() {
                   <SelectItem value="blue">Blue</SelectItem>
                   <SelectItem value="pink">Pink</SelectItem>
                   <SelectItem value="orange">Orange</SelectItem>
-                  <SelectItem value="pokemon">Pokemon</SelectItem>
+                  <SelectItem value="ultraman">Ultraman</SelectItem>
+                  <SelectItem value="zelda">Zelda</SelectItem>
+                  <SelectItem value="minecraft">Minecraft</SelectItem>
                 </SelectContent>
               </Select>
             </div>
