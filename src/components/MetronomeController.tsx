@@ -1,11 +1,14 @@
+
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Play, Square, Plus, Minus, Palette, Volume2, Music } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { BeatIndicator } from "./BeatIndicator";
 import { cn } from "@/lib/utils";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 import {
   Select,
   SelectContent,
@@ -39,6 +42,12 @@ const COLOR_THEMES = {
     card: "25 40% 13%",
     secondary: "35 80% 80%",
   },
+  pokemon: {
+    primary: "48 100% 50%",
+    background: "220 30% 12%",
+    card: "220 30% 16%",
+    secondary: "48 100% 70%",
+  },
 };
 
 const SOUND_PROFILES = {
@@ -61,7 +70,6 @@ export default function MetronomeController() {
   const timerID = useRef<number | null>(null);
   const beatsPerMeasure = parseInt(timeSignature.split("/")[0]);
 
-  // Use refs to track audio parameters for live updates in the scheduler loop
   const bpmRef = useRef(bpm);
   const beatsPerMeasureRef = useRef(beatsPerMeasure);
   const soundProfileRef = useRef(soundProfile);
@@ -80,7 +88,6 @@ export default function MetronomeController() {
     const profile = SOUND_PROFILES[soundProfileRef.current];
 
     osc.type = profile.type;
-    // Check if it's the accent beat (beat 0 of the measure)
     osc.frequency.value = beatNum % beatsPerMeasureRef.current === 0 ? profile.accent : profile.normal;
     
     envelope.gain.value = 1;
@@ -104,7 +111,6 @@ export default function MetronomeController() {
       nextNoteTime.current += secondsPerBeat;
       
       const currentLocalBeat = beatNumber.current % beatsPerMeasureRef.current;
-      // Use setTimeout for UI updates to avoid blocking the scheduler
       setTimeout(() => setCurrentBeat(currentLocalBeat), 0);
       
       beatNumber.current++;
@@ -144,9 +150,13 @@ export default function MetronomeController() {
 
   const currentTheme = COLOR_THEMES[themeColor];
 
+  const pikachuImg = PlaceHolderImages.find(img => img.id === "pikachu");
+  const charizardImg = PlaceHolderImages.find(img => img.id === "charizard");
+  const mewtwoImg = PlaceHolderImages.find(img => img.id === "mewtwo");
+
   return (
     <div 
-      className="w-full min-h-screen bg-background transition-colors duration-500 ease-in-out flex flex-col items-center"
+      className="w-full min-h-screen bg-background transition-colors duration-500 ease-in-out flex flex-col items-center relative overflow-hidden"
       style={{ 
         '--primary': currentTheme.primary,
         '--background': currentTheme.background,
@@ -156,8 +166,50 @@ export default function MetronomeController() {
         '--ring': currentTheme.primary,
       } as React.CSSProperties}
     >
+      {/* Decorative Pokemon Images */}
+      {themeColor === "pokemon" && (
+        <>
+          <div className="absolute top-10 -left-10 opacity-40 animate-bounce transition-all duration-1000">
+            {pikachuImg && (
+              <Image 
+                src={pikachuImg.imageUrl} 
+                alt={pikachuImg.description} 
+                width={120} 
+                height={120} 
+                data-ai-hint={pikachuImg.imageHint}
+                className="rounded-full border-4 border-primary"
+              />
+            )}
+          </div>
+          <div className="absolute bottom-20 -right-10 opacity-30 animate-pulse transition-all duration-1000">
+            {charizardImg && (
+              <Image 
+                src={charizardImg.imageUrl} 
+                alt={charizardImg.description} 
+                width={150} 
+                height={150} 
+                data-ai-hint={charizardImg.imageHint}
+                className="rounded-full border-4 border-primary"
+              />
+            )}
+          </div>
+          <div className="absolute top-1/2 left-0 opacity-20 transition-all duration-1000 blur-sm">
+            {mewtwoImg && (
+              <Image 
+                src={mewtwoImg.imageUrl} 
+                alt={mewtwoImg.description} 
+                width={100} 
+                height={100} 
+                data-ai-hint={mewtwoImg.imageHint}
+                className="rounded-full"
+              />
+            )}
+          </div>
+        </>
+      )}
+
       {/* Themed Header */}
-      <header className="w-full py-8 px-4 flex items-center justify-center gap-2">
+      <header className="w-full py-8 px-4 flex items-center justify-center gap-2 z-10">
         <div className="bg-primary p-2 rounded-xl transition-colors duration-500">
           <Music className="w-6 h-6 text-background" />
         </div>
@@ -167,7 +219,7 @@ export default function MetronomeController() {
       </header>
 
       {/* Main Content Area */}
-      <div className="flex-1 w-full max-w-md space-y-8 px-4 pb-12">
+      <div className="flex-1 w-full max-w-md space-y-8 px-4 pb-12 z-10">
         {/* Visual Indicator Area */}
         <div className="bg-card rounded-3xl p-6 shadow-2xl border border-primary/10 transition-colors duration-500">
           <BeatIndicator 
@@ -274,21 +326,22 @@ export default function MetronomeController() {
               </Select>
             </div>
 
-            {/* Theme Color */}
+            {/* Theme Color (Renamed to Theme) */}
             <div className="flex items-center justify-between p-4 bg-card rounded-2xl border border-primary/10 transition-colors duration-500">
               <div className="flex items-center gap-2">
                 <Palette className="w-4 h-4 text-secondary transition-colors duration-500" />
-                <span className="text-md font-bold text-secondary transition-colors duration-500">Color</span>
+                <span className="text-md font-bold text-secondary transition-colors duration-500">Theme</span>
               </div>
               <Select value={themeColor} onValueChange={(v) => setThemeColor(v as any)}>
                 <SelectTrigger className="w-32 bg-background border-none text-primary font-bold capitalize">
-                  <SelectValue placeholder="Color" />
+                  <SelectValue placeholder="Theme" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="lime">Lime</SelectItem>
                   <SelectItem value="blue">Blue</SelectItem>
                   <SelectItem value="pink">Pink</SelectItem>
                   <SelectItem value="orange">Orange</SelectItem>
+                  <SelectItem value="pokemon">Pokemon</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -296,7 +349,7 @@ export default function MetronomeController() {
         </div>
 
         <footer className="text-center text-muted-foreground text-sm pt-8 opacity-60">
-          Designed for little musicians • LovingBeats v1.0
+          Designed for little musicians • LovingBeats v1.1
         </footer>
       </div>
     </div>

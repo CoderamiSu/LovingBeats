@@ -5,6 +5,24 @@
       "description": "A happy child playing music",
       "imageUrl": "https://picsum.photos/seed/music123/1200/600",
       "imageHint": "child music"
+    },
+    {
+      "id": "pikachu",
+      "description": "Pikachu icon",
+      "imageUrl": "https://picsum.photos/seed/pika/200/200",
+      "imageHint": "yellow character"
+    },
+    {
+      "id": "charizard",
+      "description": "Charizard icon",
+      "imageUrl": "https://picsum.photos/seed/char/200/200",
+      "imageHint": "orange dragon"
+    },
+    {
+      "id": "mewtwo",
+      "description": "Mewtwo icon",
+      "imageUrl": "https://picsum.photos/seed/mew2/200/200",
+      "imageHint": "purple character"
     }
   ]
 }
