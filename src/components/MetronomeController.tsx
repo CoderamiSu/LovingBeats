@@ -78,6 +78,7 @@ export default function MetronomeController() {
   const beatNumber = useRef(0);
   const timerID = useRef<number | null>(null);
   const beatsPerMeasure = parseInt(timeSignature.split("/")[0]);
+  const wakeLock = useRef<any>(null);
 
   const bpmRef = useRef(bpm);
   const beatsPerMeasureRef = useRef(beatsPerMeasure);
@@ -88,6 +89,48 @@ export default function MetronomeController() {
     beatsPerMeasureRef.current = beatsPerMeasure;
     soundProfileRef.current = soundProfile;
   }, [bpm, beatsPerMeasure, soundProfile]);
+
+  // Screen Wake Lock Management to keep the display on during practice
+  const requestWakeLock = useCallback(async () => {
+    if (typeof window !== 'undefined' && 'wakeLock' in navigator) {
+      try {
+        wakeLock.current = await (navigator as any).wakeLock.request('screen');
+      } catch (err: any) {
+        console.warn(`Wake Lock could not be acquired: ${err.message}`);
+      }
+    }
+  }, []);
+
+  const releaseWakeLock = useCallback(() => {
+    if (wakeLock.current !== null) {
+      wakeLock.current.release().then(() => {
+        wakeLock.current = null;
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isPlaying) {
+      requestWakeLock();
+    } else {
+      releaseWakeLock();
+    }
+    
+    return () => {
+      releaseWakeLock();
+    };
+  }, [isPlaying, requestWakeLock, releaseWakeLock]);
+
+  // Re-acquire wake lock when the app returns to the foreground if it was playing
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible' && isPlaying) {
+        await requestWakeLock();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [isPlaying, requestWakeLock]);
 
   const scheduleNote = useCallback((beatNum: number, time: number) => {
     if (!audioContext.current) return;
