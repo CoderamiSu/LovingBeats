@@ -2,7 +2,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'BeatBuddy Metronome - Fun Rhythm Learning for Kids',
+  title: 'LovingBeats Metronome - Fun Rhythm Learning for Kids',
   description: 'A precise and easy-to-use metronome app designed specifically for children learners.',
 };
 

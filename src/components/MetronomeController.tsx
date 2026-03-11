@@ -104,7 +104,7 @@ export default function MetronomeController() {
       nextNoteTime.current += secondsPerBeat;
       
       const currentLocalBeat = beatNumber.current % beatsPerMeasureRef.current;
-      // Use setImmediate-like behavior with 0ms timeout for UI updates
+      // Use setTimeout for UI updates to avoid blocking the scheduler
       setTimeout(() => setCurrentBeat(currentLocalBeat), 0);
       
       beatNumber.current++;
@@ -162,7 +162,7 @@ export default function MetronomeController() {
           <Music className="w-6 h-6 text-background" />
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          BeatBuddy <span className="text-primary transition-colors duration-500">Metronome</span>
+          LovingBeats <span className="text-primary transition-colors duration-500">Metronome</span>
         </h1>
       </header>
 
@@ -296,7 +296,7 @@ export default function MetronomeController() {
         </div>
 
         <footer className="text-center text-muted-foreground text-sm pt-8 opacity-60">
-          Designed for little musicians • BeatBuddy v1.0
+          Designed for little musicians • LovingBeats v1.0
         </footer>
       </div>
     </div>
