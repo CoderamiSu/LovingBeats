@@ -2,9 +2,8 @@
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
-  /* Note: output: 'export' is required for Capacitor builds, 
-     but disabled during dev to ensure preview stability. */
-  // output: 'export',
+  /* Note: output: 'export' is required for Capacitor builds. */
+  output: 'export',
   experimental: {
     /* Allow the specific cloud workstation origin to prevent CORS/HMR issues */
     allowedDevOrigins: [
