@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.lovingbeats.app',
-  appName: 'LovingBeats',
+  appId: 'com.simplebeats.app',
+  appName: 'SimpleBeats',
   webDir: 'out',
   bundledWebRuntime: false
 };

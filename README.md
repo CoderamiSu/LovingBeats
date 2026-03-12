@@ -1,4 +1,4 @@
-# LovingBeats Metronome
+# SimpleBeats Metronome
 
 A precise and fun rhythm learning app designed specifically for children. Built with Next.js, Tailwind CSS, and Capacitor.
 
@@ -9,7 +9,7 @@ Follow these steps to run the application locally in your browser for developmen
 ### 1. Clone the repository
 ```bash
 git clone <your-repo-url>
-cd LovingBeats
+cd SimpleBeats
 ```
 
 ### 2. Install Dependencies
@@ -95,4 +95,4 @@ npm run cap-open-android
 3. If prompted, allow "Install apps from unknown sources".
 
 ---
-*Designed with ❤️ for little musicians by LovingBeats.*
+*Designed with ❤️ for little musicians by SimpleBeats.*

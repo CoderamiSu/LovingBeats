@@ -90,7 +90,6 @@ export default function MetronomeController() {
     soundProfileRef.current = soundProfile;
   }, [bpm, beatsPerMeasure, soundProfile]);
 
-  // Screen Wake Lock Management to keep the display on during practice
   const requestWakeLock = useCallback(async () => {
     if (typeof window !== 'undefined' && 'wakeLock' in navigator) {
       try {
@@ -121,7 +120,6 @@ export default function MetronomeController() {
     };
   }, [isPlaying, requestWakeLock, releaseWakeLock]);
 
-  // Re-acquire wake lock when the app returns to the foreground if it was playing
   useEffect(() => {
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'visible' && isPlaying) {
@@ -214,19 +212,16 @@ export default function MetronomeController() {
         '--ring': currentTheme.primary,
       } as React.CSSProperties}
     >
-      {/* Themed Header */}
       <header className="w-full py-8 px-4 flex items-center justify-center gap-2 z-10">
         <div className="bg-primary p-2 rounded-xl transition-colors duration-500">
           <Music className="w-6 h-6 text-background" />
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          LovingBeats <span className="text-primary transition-colors duration-500">Metronome</span>
+          SimpleBeats <span className="text-primary transition-colors duration-500">Metronome</span>
         </h1>
       </header>
 
-      {/* Main Content Area */}
       <div className="flex-1 w-full max-w-md space-y-8 px-4 pb-12 z-10">
-        {/* Visual Indicator Area */}
         <div className="bg-card rounded-3xl p-6 shadow-2xl border border-primary/10 transition-colors duration-500">
           <BeatIndicator 
             currentBeat={currentBeat} 
@@ -244,9 +239,7 @@ export default function MetronomeController() {
           </div>
         </div>
 
-        {/* Main Controls */}
         <div className="space-y-10">
-          {/* Slider & Quick Adjust */}
           <div className="space-y-6">
             <div className="flex items-center gap-4">
               <Button
@@ -276,7 +269,6 @@ export default function MetronomeController() {
             </div>
           </div>
 
-          {/* Start/Stop Button */}
           <div className="flex justify-center">
             <Button
               onClick={toggleMetronome}
@@ -295,9 +287,7 @@ export default function MetronomeController() {
             </Button>
           </div>
 
-          {/* Settings Grid */}
           <div className="grid grid-cols-1 gap-3">
-            {/* Time Signature */}
             <div className="flex items-center justify-between p-4 bg-card rounded-2xl border border-primary/10 transition-colors duration-500">
               <span className="text-md font-bold text-secondary transition-colors duration-500">Time Signature</span>
               <Select value={timeSignature} onValueChange={setTimeSignature}>
@@ -314,7 +304,6 @@ export default function MetronomeController() {
               </Select>
             </div>
 
-            {/* Sound Profile */}
             <div className="flex items-center justify-between p-4 bg-card rounded-2xl border border-primary/10 transition-colors duration-500">
               <div className="flex items-center gap-2">
                 <Volume2 className="w-4 h-4 text-secondary transition-colors duration-500" />
@@ -332,7 +321,6 @@ export default function MetronomeController() {
               </Select>
             </div>
 
-            {/* Theme Color (Renamed to Theme) */}
             <div className="flex items-center justify-between p-4 bg-card rounded-2xl border border-primary/10 transition-colors duration-500">
               <div className="flex items-center gap-2">
                 <Palette className="w-4 h-4 text-secondary transition-colors duration-500" />
@@ -357,7 +345,7 @@ export default function MetronomeController() {
         </div>
 
         <footer className="text-center text-muted-foreground text-sm pt-8 opacity-60">
-          Designed for little musicians • LovingBeats v1.1
+          Just a metronome • Designed for little musicians • SimpleBeats v1.1
         </footer>
       </div>
     </div>
