@@ -54,6 +54,8 @@ Before building the APK, you must install and configure these tools on your loca
 3. Open Android Studio, go to **Settings > Languages & Frameworks > Android SDK** and ensure at least one SDK platform (e.g., Android 14.0) is installed.
 4. Add the Android SDK `platform-tools` folder to your system's `PATH`.
 
+---
+
 ### 2. Build Steps
 
 #### Step A: Build the Static Web Files
@@ -79,6 +81,11 @@ Launch the native project in Android Studio to perform the final build.
 ```bash
 npm run cap-open-android
 ```
+
+> **Note for Linux/Snap Users:** If you get an error saying "Unable to launch Android Studio", run this command in your terminal before opening:
+> `export CAPACITOR_ANDROID_STUDIO_PATH="/snap/bin/android-studio"`
+
+---
 
 ### 3. Creating the APK in Android Studio
 
