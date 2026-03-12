@@ -1,8 +1,10 @@
+
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
-  /* Enable static export for Capacitor compatibility */
-  output: 'export',
+  /* Note: output: 'export' is required for Capacitor builds, 
+     but disabled during dev to ensure preview stability. */
+  // output: 'export',
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -10,7 +12,7 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    /* Required for static export */
+    /* Required for Capacitor/Static export compatibility */
     unoptimized: true,
     remotePatterns: [
       {
