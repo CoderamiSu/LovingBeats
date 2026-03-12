@@ -5,6 +5,12 @@ const nextConfig: NextConfig = {
   /* Note: output: 'export' is required for Capacitor builds, 
      but disabled during dev to ensure preview stability. */
   // output: 'export',
+  experimental: {
+    /* Allow the specific cloud workstation origin to prevent CORS/HMR issues */
+    allowedDevOrigins: [
+      '6000-firebase-studio-1773194783285.cluster-fsmcisrvfbb5cr5mvra3hr3qyg.cloudworkstations.dev'
+    ],
+  },
   typescript: {
     ignoreBuildErrors: true,
   },
