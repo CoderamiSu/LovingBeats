@@ -64,11 +64,15 @@ npm run static-build
 This creates an `out/` folder containing the static HTML, CSS, and JS.
 
 #### Step B: Sync with Android Platform
-Sync the web assets into the native Android project.
+If this is your first time building for Android, you must add the platform first:
+```bash
+npm run cap-add-android
+```
+
+Then, sync the web assets into the native Android project:
 ```bash
 npm run cap-sync
 ```
-*Note: If this is your first time, run `npm run cap-add-android` before syncing.*
 
 #### Step C: Open in Android Studio
 Launch the native project in Android Studio to perform the final build.
