@@ -278,17 +278,17 @@ export default function MetronomeController() {
                   variant="outline"
                   size="icon"
                   className="h-14 w-14 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10 text-lg font-bold"
-                  onClick={() => adjustBpm(-5)}
+                  onClick={() => adjustBpm(-1)}
                 >
-                  -5
+                  -1
                 </Button>
                 <Button
                   variant="outline"
                   size="icon"
                   className="h-14 w-14 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10 text-lg font-bold"
-                  onClick={() => adjustBpm(-1)}
+                  onClick={() => adjustBpm(-5)}
                 >
-                  -1
+                  -5
                 </Button>
               </div>
               
@@ -307,17 +307,17 @@ export default function MetronomeController() {
                   variant="outline"
                   size="icon"
                   className="h-14 w-14 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10 text-lg font-bold"
-                  onClick={() => adjustBpm(5)}
+                  onClick={() => adjustBpm(1)}
                 >
-                  +5
+                  +1
                 </Button>
                 <Button
                   variant="outline"
                   size="icon"
                   className="h-14 w-14 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10 text-lg font-bold"
-                  onClick={() => adjustBpm(1)}
+                  onClick={() => adjustBpm(5)}
                 >
-                  +1
+                  +5
                 </Button>
               </div>
             </div>
