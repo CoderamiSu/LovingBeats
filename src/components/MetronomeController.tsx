@@ -253,36 +253,7 @@ export default function MetronomeController() {
 
         <div className="w-full space-y-10 pt-4">
           <div className="flex items-center justify-center gap-6">
-            {/* Plus Buttons on the Left */}
-            <div className="flex flex-col gap-6">
-              <Button
-                variant="outline"
-                className="h-16 w-16 rounded-full border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
-                onClick={() => adjustBpm(1)}
-              >
-                +1
-              </Button>
-              <Button
-                variant="outline"
-                className="h-16 w-16 rounded-full border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
-                onClick={() => adjustBpm(5)}
-              >
-                +5
-              </Button>
-            </div>
-            
-            <div className="flex-1 h-32 flex items-center px-6 bg-white/60 rounded-[3rem] border-4 border-white shadow-inner backdrop-blur-sm">
-              <Slider
-                value={[bpm]}
-                onValueChange={(vals) => setBpm(vals[0])}
-                min={40}
-                max={240}
-                step={1}
-                className="h-10"
-              />
-            </div>
-
-            {/* Minus Buttons on the Right */}
+            {/* Minus Buttons on the Left */}
             <div className="flex flex-col gap-6">
               <Button
                 variant="outline"
@@ -297,6 +268,35 @@ export default function MetronomeController() {
                 onClick={() => adjustBpm(-5)}
               >
                 -5
+              </Button>
+            </div>
+            
+            <div className="flex-1 h-32 flex items-center px-6 bg-white/60 rounded-[3rem] border-4 border-white shadow-inner backdrop-blur-sm">
+              <Slider
+                value={[bpm]}
+                onValueChange={(vals) => setBpm(vals[0])}
+                min={40}
+                max={240}
+                step={1}
+                className="h-10"
+              />
+            </div>
+
+            {/* Plus Buttons on the Right */}
+            <div className="flex flex-col gap-6">
+              <Button
+                variant="outline"
+                className="h-16 w-16 rounded-full border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
+                onClick={() => adjustBpm(1)}
+              >
+                +1
+              </Button>
+              <Button
+                variant="outline"
+                className="h-16 w-16 rounded-full border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
+                onClick={() => adjustBpm(5)}
+              >
+                +5
               </Button>
             </div>
           </div>
