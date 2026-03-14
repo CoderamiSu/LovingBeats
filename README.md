@@ -8,7 +8,7 @@ Follow these steps to run the application locally in your browser for developmen
 
 ### 1. Clone the repository
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/CoderamiSu/SimpleBeats.git
 cd SimpleBeats
 ```
 
