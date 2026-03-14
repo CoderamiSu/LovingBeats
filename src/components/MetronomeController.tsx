@@ -94,11 +94,13 @@ export default function MetronomeController() {
         const settings = JSON.parse(saved);
         if (settings.bpm) setBpm(settings.bpm);
         if (settings.timeSignature) setTimeSignature(settings.timeSignature);
-        if (settings.themeColor && COLOR_THEMES[settings.themeColor as keyof typeof COLOR_THEMES]) {
-          setThemeColor(settings.themeColor as keyof typeof COLOR_THEMES);
+        const savedTheme = settings.themeColor as keyof typeof COLOR_THEMES;
+        if (savedTheme && COLOR_THEMES[savedTheme]) {
+          setThemeColor(savedTheme);
         }
-        if (settings.soundProfile && SOUND_PROFILES[settings.soundProfile as keyof typeof SOUND_PROFILES]) {
-          setSoundProfile(settings.soundProfile as keyof typeof SOUND_PROFILES);
+        const savedSound = settings.soundProfile as keyof typeof SOUND_PROFILES;
+        if (savedSound && SOUND_PROFILES[savedSound]) {
+          setSoundProfile(savedSound);
         }
       } catch (e) {
         console.error("Failed to parse saved settings", e);
@@ -204,7 +206,7 @@ export default function MetronomeController() {
 
   return (
     <div 
-      className="w-full min-h-screen bg-background transition-colors duration-700 ease-in-out flex flex-col items-center relative overflow-hidden p-4 pt-12"
+      className="w-full min-h-screen bg-background transition-colors duration-700 ease-in-out flex flex-col items-center relative overflow-hidden p-2 pt-4"
       style={{ 
         '--primary': currentTheme.primary,
         '--background': currentTheme.background,
@@ -215,85 +217,85 @@ export default function MetronomeController() {
       } as React.CSSProperties}
     >
       {/* Playful Background Elements */}
-      <div className="absolute top-10 left-10 text-primary/10 floating" style={{ animationDelay: '0s' }}><Star size={64} fill="currentColor" /></div>
-      <div className="absolute top-40 right-10 text-secondary/10 floating" style={{ animationDelay: '1s' }}><Heart size={48} fill="currentColor" /></div>
-      <div className="absolute bottom-20 left-20 text-accent/20 floating" style={{ animationDelay: '2s' }}><Music size={56} /></div>
+      <div className="absolute top-5 left-5 text-primary/10 floating" style={{ animationDelay: '0s' }}><Star size={48} fill="currentColor" /></div>
+      <div className="absolute top-20 right-5 text-secondary/10 floating" style={{ animationDelay: '1s' }}><Heart size={32} fill="currentColor" /></div>
+      <div className="absolute bottom-10 left-10 text-accent/20 floating" style={{ animationDelay: '2s' }}><Music size={40} /></div>
       
-      <header className="w-full py-6 flex flex-col items-center justify-center gap-2 z-10 floating">
-        <div className="bg-primary p-4 rounded-[2.5rem] shadow-xl clay-button rotate-3 border-4 border-white">
-          <Music className="w-10 h-10 text-white" />
+      <header className="w-full py-2 flex flex-col items-center justify-center gap-1 z-10">
+        <div className="bg-primary p-2 rounded-2xl shadow-md clay-button rotate-2 border-2 border-white">
+          <Music className="w-6 h-6 text-white" />
         </div>
-        <h1 className="text-4xl font-black tracking-tight text-foreground drop-shadow-sm mt-2">
+        <h1 className="text-2xl font-black tracking-tight text-foreground drop-shadow-sm mt-1">
           Simple<span className="text-primary">Beats</span>
         </h1>
       </header>
 
-      <div className="flex-1 w-full max-w-md space-y-6 z-10 flex flex-col items-center">
-        <div className="w-full clay-card p-10 group relative transition-all duration-300">
+      <div className="flex-1 w-full max-w-md space-y-4 z-10 flex flex-col items-center">
+        <div className="w-full clay-card p-4 group relative transition-all duration-300">
           <BeatIndicator 
             currentBeat={currentBeat} 
             totalBeats={beatsPerMeasure} 
             active={isPlaying} 
           />
           
-          <div className="text-center space-y-0 py-4">
+          <div className="text-center space-y-0 py-2">
             <div className={cn(
-              "text-[10rem] font-black text-primary leading-none tracking-tighter transition-all duration-200 drop-shadow-md select-none",
+              "text-[6rem] font-black text-primary leading-none tracking-tighter transition-all duration-200 drop-shadow-md select-none",
               isPlaying && "beat-active"
             )}>
               {bpm}
             </div>
-            <div className="flex items-center justify-center gap-3 text-secondary font-black text-3xl uppercase tracking-widest">
-              <Sparkles className="w-6 h-6 fill-current" />
+            <div className="flex items-center justify-center gap-2 text-secondary font-black text-xl uppercase tracking-widest">
+              <Sparkles className="w-4 h-4 fill-current" />
               BPM
-              <Sparkles className="w-6 h-6 fill-current" />
+              <Sparkles className="w-4 h-4 fill-current" />
             </div>
           </div>
         </div>
 
-        <div className="w-full space-y-10 pt-4">
-          <div className="flex items-center justify-center gap-6">
+        <div className="w-full space-y-4 pt-2">
+          <div className="flex items-center justify-center gap-3">
             {/* Minus Buttons on the Left */}
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-2">
               <Button
                 variant="outline"
-                className="h-16 w-16 rounded-full border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
+                className="h-12 w-12 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10 text-lg font-black bg-white clay-button p-0"
                 onClick={() => adjustBpm(-1)}
               >
                 -1
               </Button>
               <Button
                 variant="outline"
-                className="h-16 w-16 rounded-full border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
+                className="h-12 w-12 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10 text-lg font-black bg-white clay-button p-0"
                 onClick={() => adjustBpm(-5)}
               >
                 -5
               </Button>
             </div>
             
-            <div className="flex-1 h-32 flex items-center px-6 bg-white/60 rounded-[3rem] border-4 border-white shadow-inner backdrop-blur-sm">
+            <div className="flex-1 h-16 flex items-center px-4 bg-white/60 rounded-3xl border-2 border-white shadow-inner backdrop-blur-sm">
               <Slider
                 value={[bpm]}
                 onValueChange={(vals) => setBpm(vals[0])}
                 min={40}
                 max={240}
                 step={1}
-                className="h-10"
+                className="h-8"
               />
             </div>
 
             {/* Plus Buttons on the Right */}
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-2">
               <Button
                 variant="outline"
-                className="h-16 w-16 rounded-full border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
+                className="h-12 w-12 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10 text-lg font-black bg-white clay-button p-0"
                 onClick={() => adjustBpm(1)}
               >
                 +1
               </Button>
               <Button
                 variant="outline"
-                className="h-16 w-16 rounded-full border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
+                className="h-12 w-12 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10 text-lg font-black bg-white clay-button p-0"
                 onClick={() => adjustBpm(5)}
               >
                 +5
@@ -301,37 +303,37 @@ export default function MetronomeController() {
             </div>
           </div>
 
-          <div className="flex justify-center py-6">
+          <div className="flex justify-center py-2">
             <Button
               onClick={toggleMetronome}
               className={cn(
-                "h-48 w-48 rounded-[4rem] shadow-2xl transition-all duration-300 transform active:scale-90 border-[12px] border-white",
+                "h-28 w-28 rounded-3xl shadow-xl transition-all duration-300 transform active:scale-90 border-8 border-white",
                 isPlaying 
-                  ? "bg-secondary text-white hover:bg-secondary/90 shadow-[0_20px_40px_rgba(var(--secondary),0.4)]" 
-                  : "bg-primary text-white hover:bg-primary/90 shadow-[0_20px_40px_rgba(var(--primary),0.4)]"
+                  ? "bg-secondary text-white hover:bg-secondary/90 shadow-[0_10px_20px_rgba(var(--secondary),0.4)]" 
+                  : "bg-primary text-white hover:bg-primary/90 shadow-[0_10px_20px_rgba(var(--primary),0.4)]"
               )}
             >
               {isPlaying ? (
-                <Square className="w-24 h-24 fill-current" />
+                <Square className="w-12 h-12 fill-current" />
               ) : (
-                <Play className="w-24 h-24 fill-current ml-4" />
+                <Play className="w-12 h-12 fill-current ml-2" />
               )}
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 gap-5">
-            <div className="flex items-center justify-between p-6 bg-white/80 rounded-[2.5rem] border-4 border-white shadow-lg backdrop-blur-md">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-primary/10 rounded-2xl">
-                  <Music className="w-6 h-6 text-primary" />
+          <div className="grid grid-cols-1 gap-2">
+            <div className="flex items-center justify-between p-3 bg-white/80 rounded-2xl border-2 border-white shadow-md backdrop-blur-md">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-xl">
+                  <Music className="w-5 h-5 text-primary" />
                 </div>
-                <span className="text-xl font-black text-foreground uppercase tracking-wider">Beats</span>
+                <span className="text-base font-black text-foreground uppercase tracking-wider">Beats</span>
               </div>
               <Select value={timeSignature} onValueChange={setTimeSignature}>
-                <SelectTrigger className="w-32 h-14 bg-background/50 border-none text-primary font-black rounded-2xl text-xl shadow-inner">
+                <SelectTrigger className="w-24 h-10 bg-background/50 border-none text-primary font-black rounded-xl text-lg shadow-inner">
                   <SelectValue placeholder="Time" />
                 </SelectTrigger>
-                <SelectContent className="rounded-[2rem] border-4 border-primary/20">
+                <SelectContent className="rounded-2xl border-2 border-primary/20">
                   <SelectItem value="2/4">2 / 4</SelectItem>
                   <SelectItem value="3/4">3 / 4</SelectItem>
                   <SelectItem value="4/4">4 / 4</SelectItem>
@@ -341,18 +343,18 @@ export default function MetronomeController() {
               </Select>
             </div>
 
-            <div className="flex items-center justify-between p-6 bg-white/80 rounded-[2.5rem] border-4 border-white shadow-lg backdrop-blur-md">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-secondary/10 rounded-2xl">
-                  <Volume2 className="w-6 h-6 text-secondary" />
+            <div className="flex items-center justify-between p-3 bg-white/80 rounded-2xl border-2 border-white shadow-md backdrop-blur-md">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-secondary/10 rounded-xl">
+                  <Volume2 className="w-5 h-5 text-secondary" />
                 </div>
-                <span className="text-xl font-black text-foreground uppercase tracking-wider">Sound</span>
+                <span className="text-base font-black text-foreground uppercase tracking-wider">Sound</span>
               </div>
               <Select value={soundProfile} onValueChange={(v) => setSoundProfile(v as any)}>
-                <SelectTrigger className="w-40 h-14 bg-background/50 border-none text-secondary font-black rounded-2xl text-xl capitalize shadow-inner">
+                <SelectTrigger className="w-32 h-10 bg-background/50 border-none text-secondary font-black rounded-xl text-lg capitalize shadow-inner">
                   <SelectValue placeholder="Sound" />
                 </SelectTrigger>
-                <SelectContent className="rounded-[2rem] border-4 border-secondary/20">
+                <SelectContent className="rounded-2xl border-2 border-secondary/20">
                   <SelectItem value="classic">Classic</SelectItem>
                   <SelectItem value="woodblock">Woody</SelectItem>
                   <SelectItem value="electronic">Bleep</SelectItem>
@@ -360,18 +362,18 @@ export default function MetronomeController() {
               </Select>
             </div>
 
-            <div className="flex items-center justify-between p-6 bg-white/80 rounded-[2.5rem] border-4 border-white shadow-lg backdrop-blur-md">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-accent/20 rounded-2xl">
-                  <Palette className="w-6 h-6 text-accent-foreground" />
+            <div className="flex items-center justify-between p-3 bg-white/80 rounded-2xl border-2 border-white shadow-md backdrop-blur-md">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-accent/20 rounded-xl">
+                  <Palette className="w-5 h-5 text-accent-foreground" />
                 </div>
-                <span className="text-xl font-black text-foreground uppercase tracking-wider">Style</span>
+                <span className="text-base font-black text-foreground uppercase tracking-wider">Style</span>
               </div>
               <Select value={themeColor} onValueChange={(v) => setThemeColor(v as any)}>
-                <SelectTrigger className="w-40 h-14 bg-background/50 border-none text-foreground font-black rounded-2xl text-xl capitalize shadow-inner">
+                <SelectTrigger className="w-32 h-10 bg-background/50 border-none text-foreground font-black rounded-xl text-lg capitalize shadow-inner">
                   <SelectValue placeholder="Theme" />
                 </SelectTrigger>
-                <SelectContent className="rounded-[2rem] border-4 border-primary/20">
+                <SelectContent className="rounded-2xl border-2 border-primary/20">
                   <SelectItem value="playtime">Toy Box</SelectItem>
                   <SelectItem value="candy">Candy</SelectItem>
                   <SelectItem value="ocean">Ocean</SelectItem>
@@ -385,8 +387,8 @@ export default function MetronomeController() {
           </div>
         </div>
 
-        <footer className="w-full text-center text-muted-foreground/60 text-sm py-12 font-bold tracking-tight">
-          Just a metronome • Designed with ❤️ for little musicians • SimpleBeats v2.0
+        <footer className="w-full text-center text-muted-foreground/60 text-[10px] py-4 font-bold tracking-tight">
+          Just a metronome • Designed with ❤️ • SimpleBeats v2.0
         </footer>
       </div>
     </div>
