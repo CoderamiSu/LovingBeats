@@ -16,28 +16,46 @@ import {
 
 const COLOR_THEMES = {
   playtime: {
-    primary: "48 100% 60%", // Yellow
-    background: "195 100% 95%", // Sky Blue
+    primary: "48 85% 65%", // Softened Yellow
+    background: "195 60% 96%", // Very Soft Sky Blue
     card: "0 0% 100%",
-    secondary: "0 85% 65%", // Red
+    secondary: "0 70% 70%", // Softened Red
   },
   candy: {
-    primary: "330 100% 70%",
-    background: "330 30% 95%",
+    primary: "330 75% 75%", // Soft Pink
+    background: "330 30% 97%", 
     card: "0 0% 100%",
-    secondary: "280 100% 70%",
+    secondary: "280 60% 75%", // Soft Lavender
   },
   ocean: {
-    primary: "210 100% 66%",
-    background: "210 50% 92%",
+    primary: "210 70% 70%", // Soft Ocean Blue
+    background: "210 40% 94%",
     card: "0 0% 100%",
-    secondary: "180 100% 40%",
+    secondary: "180 50% 50%", // Soft Teal
   },
   blocks: {
-    primary: "85 80% 50%",
-    background: "25 30% 92%",
+    primary: "85 55% 60%", // Soft Grass Green
+    background: "25 30% 94%", // Sand/Cream
     card: "0 0% 100%",
-    secondary: "195 90% 65%",
+    secondary: "195 60% 70%", // Soft Sky
+  },
+  ultraman: {
+    primary: "0 75% 65%", // Soft Hero Red
+    background: "210 20% 95%", // Soft Silver/White
+    card: "0 0% 100%",
+    secondary: "210 15% 70%", // Muted Silver
+  },
+  zelda: {
+    primary: "142 50% 45%", // Forest Green (Softened)
+    background: "45 35% 94%", // Parchment
+    card: "0 0% 100%",
+    secondary: "45 75% 60%", // Triforce Gold (Softened)
+  },
+  minecraft: {
+    primary: "100 45% 55%", // Pixel Green
+    background: "0 0% 92%", // Stone Gray
+    card: "0 0% 100%",
+    secondary: "25 40% 55%", // Dirt Brown
   },
 };
 
@@ -76,7 +94,6 @@ export default function MetronomeController() {
         const settings = JSON.parse(saved);
         if (settings.bpm) setBpm(settings.bpm);
         if (settings.timeSignature) setTimeSignature(settings.timeSignature);
-        // Validate themeColor exists in COLOR_THEMES
         if (settings.themeColor && COLOR_THEMES[settings.themeColor as keyof typeof COLOR_THEMES]) {
           setThemeColor(settings.themeColor as keyof typeof COLOR_THEMES);
         }
@@ -236,34 +253,7 @@ export default function MetronomeController() {
 
         <div className="w-full space-y-10 pt-4">
           <div className="flex items-center justify-center gap-6">
-            <div className="flex flex-col gap-6">
-              <Button
-                variant="outline"
-                className="h-16 w-16 rounded-3xl border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
-                onClick={() => adjustBpm(1)}
-              >
-                +1
-              </Button>
-              <Button
-                variant="outline"
-                className="h-16 w-16 rounded-3xl border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
-                onClick={() => adjustBpm(5)}
-              >
-                +5
-              </Button>
-            </div>
-            
-            <div className="flex-1 h-32 flex items-center px-6 bg-white/60 rounded-[3rem] border-4 border-white shadow-inner backdrop-blur-sm">
-              <Slider
-                value={[bpm]}
-                onValueChange={(vals) => setBpm(vals[0])}
-                min={40}
-                max={240}
-                step={1}
-                className="h-10"
-              />
-            </div>
-
+            {/* Minus Buttons on the Left */}
             <div className="flex flex-col gap-6">
               <Button
                 variant="outline"
@@ -278,6 +268,35 @@ export default function MetronomeController() {
                 onClick={() => adjustBpm(-5)}
               >
                 -5
+              </Button>
+            </div>
+            
+            <div className="flex-1 h-32 flex items-center px-6 bg-white/60 rounded-[3rem] border-4 border-white shadow-inner backdrop-blur-sm">
+              <Slider
+                value={[bpm]}
+                onValueChange={(vals) => setBpm(vals[0])}
+                min={40}
+                max={240}
+                step={1}
+                className="h-10"
+              />
+            </div>
+
+            {/* Plus Buttons on the Right */}
+            <div className="flex flex-col gap-6">
+              <Button
+                variant="outline"
+                className="h-16 w-16 rounded-3xl border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
+                onClick={() => adjustBpm(1)}
+              >
+                +1
+              </Button>
+              <Button
+                variant="outline"
+                className="h-16 w-16 rounded-3xl border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
+                onClick={() => adjustBpm(5)}
+              >
+                +5
               </Button>
             </div>
           </div>
@@ -357,6 +376,9 @@ export default function MetronomeController() {
                   <SelectItem value="candy">Candy</SelectItem>
                   <SelectItem value="ocean">Ocean</SelectItem>
                   <SelectItem value="blocks">Blocks</SelectItem>
+                  <SelectItem value="ultraman">Ultraman</SelectItem>
+                  <SelectItem value="zelda">Zelda</SelectItem>
+                  <SelectItem value="minecraft">Minecraft</SelectItem>
                 </SelectContent>
               </Select>
             </div>
