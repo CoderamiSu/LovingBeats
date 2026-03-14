@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Play, Square, Palette, Volume2, Music } from "lucide-react";
+import { Play, Square, Palette, Volume2, Music, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { BeatIndicator } from "./BeatIndicator";
+import { PracticePromptCard } from "./PracticePromptCard";
 import { cn } from "@/lib/utils";
 import {
   Select,
@@ -87,7 +88,6 @@ export default function MetronomeController() {
   const beatsPerMeasureRef = useRef(beatsPerMeasure);
   const soundProfileRef = useRef(soundProfile);
 
-  // Load settings on mount
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
@@ -104,7 +104,6 @@ export default function MetronomeController() {
     setIsLoaded(true);
   }, []);
 
-  // Save settings on change
   useEffect(() => {
     if (isLoaded) {
       const settings = { bpm, timeSignature, themeColor, soundProfile };
@@ -142,55 +141,33 @@ export default function MetronomeController() {
     } else {
       releaseWakeLock();
     }
-    
-    return () => {
-      releaseWakeLock();
-    };
+    return () => releaseWakeLock();
   }, [isPlaying, requestWakeLock, releaseWakeLock]);
-
-  useEffect(() => {
-    const handleVisibilityChange = async () => {
-      if (document.visibilityState === 'visible' && isPlaying) {
-        await requestWakeLock();
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [isPlaying, requestWakeLock]);
 
   const scheduleNote = useCallback((beatNum: number, time: number) => {
     if (!audioContext.current) return;
-
     const osc = audioContext.current.createOscillator();
     const envelope = audioContext.current.createGain();
     const profile = SOUND_PROFILES[soundProfileRef.current];
-
     osc.type = profile.type;
     osc.frequency.value = beatNum % beatsPerMeasureRef.current === 0 ? profile.accent : profile.normal;
-    
     envelope.gain.value = 1;
     envelope.gain.exponentialRampToValueAtTime(1, time + 0.001);
     envelope.gain.exponentialRampToValueAtTime(0.001, time + (soundProfileRef.current === 'woodblock' ? 0.05 : 0.1));
-
     osc.connect(envelope);
     envelope.connect(audioContext.current.destination);
-
     osc.start(time);
     osc.stop(time + 0.1);
   }, []);
 
   const scheduler = useCallback(() => {
     if (!audioContext.current) return;
-    
     while (nextNoteTime.current < audioContext.current.currentTime + 0.1) {
       scheduleNote(beatNumber.current, nextNoteTime.current);
-      
       const secondsPerBeat = 60.0 / bpmRef.current;
       nextNoteTime.current += secondsPerBeat;
-      
       const currentLocalBeat = beatNumber.current % beatsPerMeasureRef.current;
       setTimeout(() => setCurrentBeat(currentLocalBeat), 0);
-      
       beatNumber.current++;
     }
     timerID.current = window.setTimeout(scheduler, 25.0);
@@ -200,7 +177,6 @@ export default function MetronomeController() {
     if (!audioContext.current) {
       audioContext.current = new (window.AudioContext || (window as any).webkitAudioContext)();
     }
-
     if (isPlaying) {
       setIsPlaying(false);
       if (timerID.current) clearTimeout(timerID.current);
@@ -216,23 +192,16 @@ export default function MetronomeController() {
     }
   };
 
-  useEffect(() => {
-    return () => {
-      if (timerID.current) clearTimeout(timerID.current);
-    };
-  }, []);
-
   const adjustBpm = (delta: number) => {
     setBpm((prev) => Math.min(Math.max(prev + delta, 40), 240));
   };
 
   const currentTheme = COLOR_THEMES[themeColor];
-
   if (!isLoaded) return null;
 
   return (
     <div 
-      className="w-full min-h-screen bg-background transition-colors duration-500 ease-in-out flex flex-col items-center relative overflow-hidden"
+      className="w-full min-h-screen bg-background transition-colors duration-700 ease-in-out flex flex-col items-center relative overflow-x-hidden p-4"
       style={{ 
         '--primary': currentTheme.primary,
         '--background': currentTheme.background,
@@ -242,113 +211,129 @@ export default function MetronomeController() {
         '--ring': currentTheme.primary,
       } as React.CSSProperties}
     >
-      <header className="w-full py-8 px-4 flex items-center justify-center gap-2 z-10">
-        <div className="bg-primary p-2 rounded-xl transition-colors duration-500">
-          <Music className="w-6 h-6 text-background" />
+      {/* Playful Background Elements */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary/10 rounded-full blur-3xl pointer-events-none" />
+
+      <header className="w-full py-6 flex items-center justify-center gap-3 z-10 floating">
+        <div className="bg-primary p-3 rounded-2xl transition-all duration-500 shadow-lg rotate-3">
+          <Music className="w-8 h-8 text-background" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          SimpleBeats <span className="text-primary transition-colors duration-500">Metronome</span>
+        <h1 className="text-3xl font-black tracking-tight text-foreground drop-shadow-sm">
+          Simple<span className="text-primary transition-colors duration-500">Beats</span>
         </h1>
       </header>
 
-      <div className="flex-1 w-full max-w-md space-y-8 px-4 pb-12 z-10">
-        <div className="bg-card rounded-3xl p-6 shadow-2xl border border-primary/10 transition-colors duration-500">
+      <div className="flex-1 w-full max-w-md space-y-6 z-10 flex flex-col items-center">
+        {/* Main Display Area */}
+        <div className="w-full bg-card rounded-[3rem] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border-4 border-white/5 transition-all duration-500 group overflow-hidden relative">
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          
           <BeatIndicator 
             currentBeat={currentBeat} 
             totalBeats={beatsPerMeasure} 
             active={isPlaying} 
           />
           
-          <div className="text-center space-y-2">
-            <div className="text-8xl font-bold text-primary tracking-tighter transition-colors duration-500">
+          <div className="text-center space-y-0 py-4">
+            <div className="text-[9rem] font-black text-primary leading-none tracking-tighter transition-colors duration-500 drop-shadow-md select-none">
               {bpm}
             </div>
-            <div className="text-secondary font-bold text-xl uppercase tracking-widest transition-colors duration-500">
+            <div className="flex items-center justify-center gap-2 text-secondary font-black text-2xl uppercase tracking-[0.2em] transition-colors duration-500">
+              <Sparkles className="w-5 h-5" />
               BPM
+              <Sparkles className="w-5 h-5" />
             </div>
           </div>
         </div>
 
-        <div className="space-y-10">
-          <div className="space-y-6">
-            <div className="flex items-center justify-center gap-4">
-              {/* Decrement Stack */}
-              <div className="flex flex-col gap-3">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-14 w-14 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10 text-lg font-bold"
-                  onClick={() => adjustBpm(-1)}
-                >
-                  -1
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-14 w-14 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10 text-lg font-bold"
-                  onClick={() => adjustBpm(-5)}
-                >
-                  -5
-                </Button>
-              </div>
-              
+        {/* AI Coach Card */}
+        <div className="w-full px-2">
+          <PracticePromptCard bpm={bpm} timeSignature={timeSignature} />
+        </div>
+
+        {/* Controls Section */}
+        <div className="w-full space-y-10 pt-4">
+          <div className="flex items-center justify-center gap-6">
+            {/* Decrement Stack */}
+            <div className="flex flex-col gap-4">
+              <Button
+                variant="outline"
+                className="h-16 w-16 rounded-[1.5rem] border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-card shadow-lg active:scale-90 transition-all"
+                onClick={() => adjustBpm(-1)}
+              >
+                -1
+              </Button>
+              <Button
+                variant="outline"
+                className="h-16 w-16 rounded-[1.5rem] border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-card shadow-lg active:scale-90 transition-all"
+                onClick={() => adjustBpm(-5)}
+              >
+                -5
+              </Button>
+            </div>
+            
+            <div className="flex-1 h-32 flex items-center px-4 bg-card/40 rounded-[2rem] border-2 border-white/5">
               <Slider
                 value={[bpm]}
                 onValueChange={(vals) => setBpm(vals[0])}
                 min={40}
                 max={240}
                 step={1}
-                className="flex-1 h-12"
+                className="h-8"
               />
+            </div>
 
-              {/* Increment Stack */}
-              <div className="flex flex-col gap-3">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-14 w-14 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10 text-lg font-bold"
-                  onClick={() => adjustBpm(1)}
-                >
-                  +1
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-14 w-14 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10 text-lg font-bold"
-                  onClick={() => adjustBpm(5)}
-                >
-                  +5
-                </Button>
-              </div>
+            {/* Increment Stack */}
+            <div className="flex flex-col gap-4">
+              <Button
+                variant="outline"
+                className="h-16 w-16 rounded-[1.5rem] border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-card shadow-lg active:scale-90 transition-all"
+                onClick={() => adjustBpm(1)}
+              >
+                +1
+              </Button>
+              <Button
+                variant="outline"
+                className="h-16 w-16 rounded-[1.5rem] border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-card shadow-lg active:scale-90 transition-all"
+                onClick={() => adjustBpm(5)}
+              >
+                +5
+              </Button>
             </div>
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center py-4">
             <Button
               onClick={toggleMetronome}
               className={cn(
-                "h-32 w-32 rounded-full shadow-2xl transition-all duration-300 transform active:scale-95",
+                "h-40 w-40 rounded-[3rem] shadow-[0_15px_30px_rgba(0,0,0,0.4)] transition-all duration-300 transform active:scale-95 border-8 border-white/10",
                 isPlaying 
                   ? "bg-destructive text-white hover:bg-destructive/90" 
-                  : "bg-primary text-background hover:bg-primary/90"
+                  : "bg-primary text-background hover:bg-primary/90 pulse-button"
               )}
             >
               {isPlaying ? (
-                <Square className="w-16 h-16 fill-current" />
+                <Square className="w-20 h-20 fill-current" />
               ) : (
-                <Play className="w-16 h-16 fill-current ml-2" />
+                <Play className="w-20 h-20 fill-current ml-4" />
               )}
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 gap-3">
-            <div className="flex items-center justify-between p-4 bg-card rounded-2xl border border-primary/10 transition-colors duration-500">
-              <span className="text-md font-bold text-secondary transition-colors duration-500">Time Signature</span>
+          <div className="grid grid-cols-1 gap-4">
+            <div className="flex items-center justify-between p-5 bg-card/60 rounded-[2rem] border-2 border-white/5 backdrop-blur-md">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-secondary/20 rounded-xl">
+                  <Music className="w-5 h-5 text-secondary" />
+                </div>
+                <span className="text-lg font-black text-secondary uppercase">Beats</span>
+              </div>
               <Select value={timeSignature} onValueChange={setTimeSignature}>
-                <SelectTrigger className="w-24 bg-background border-none text-primary font-bold">
+                <SelectTrigger className="w-28 h-12 bg-background/50 border-none text-primary font-black rounded-xl text-lg">
                   <SelectValue placeholder="Time" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-2xl border-2 border-primary/20">
                   <SelectItem value="2/4">2/4</SelectItem>
                   <SelectItem value="3/4">3/4</SelectItem>
                   <SelectItem value="4/4">4/4</SelectItem>
@@ -358,48 +343,52 @@ export default function MetronomeController() {
               </Select>
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-card rounded-2xl border border-primary/10 transition-colors duration-500">
-              <div className="flex items-center gap-2">
-                <Volume2 className="w-4 h-4 text-secondary transition-colors duration-500" />
-                <span className="text-md font-bold text-secondary transition-colors duration-500">Sound</span>
+            <div className="flex items-center justify-between p-5 bg-card/60 rounded-[2rem] border-2 border-white/5 backdrop-blur-md">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-secondary/20 rounded-xl">
+                  <Volume2 className="w-5 h-5 text-secondary" />
+                </div>
+                <span className="text-lg font-black text-secondary uppercase">Sound</span>
               </div>
               <Select value={soundProfile} onValueChange={(v) => setSoundProfile(v as any)}>
-                <SelectTrigger className="w-32 bg-background border-none text-primary font-bold capitalize">
+                <SelectTrigger className="w-36 h-12 bg-background/50 border-none text-primary font-black rounded-xl text-lg capitalize">
                   <SelectValue placeholder="Sound" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-2xl border-2 border-primary/20">
                   <SelectItem value="classic">Classic</SelectItem>
-                  <SelectItem value="woodblock">Woodblock</SelectItem>
-                  <SelectItem value="electronic">Electronic</SelectItem>
+                  <SelectItem value="woodblock">Woody</SelectItem>
+                  <SelectItem value="electronic">Bleep</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-card rounded-2xl border border-primary/10 transition-colors duration-500">
-              <div className="flex items-center gap-2">
-                <Palette className="w-4 h-4 text-secondary transition-colors duration-500" />
-                <span className="text-md font-bold text-secondary transition-colors duration-500">Theme</span>
+            <div className="flex items-center justify-between p-5 bg-card/60 rounded-[2rem] border-2 border-white/5 backdrop-blur-md">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-secondary/20 rounded-xl">
+                  <Palette className="w-5 h-5 text-secondary" />
+                </div>
+                <span className="text-lg font-black text-secondary uppercase">World</span>
               </div>
               <Select value={themeColor} onValueChange={(v) => setThemeColor(v as any)}>
-                <SelectTrigger className="w-32 bg-background border-none text-primary font-bold capitalize">
+                <SelectTrigger className="w-36 h-12 bg-background/50 border-none text-primary font-black rounded-xl text-lg capitalize">
                   <SelectValue placeholder="Theme" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="lime">Lime</SelectItem>
-                  <SelectItem value="blue">Blue</SelectItem>
-                  <SelectItem value="pink">Pink</SelectItem>
-                  <SelectItem value="orange">Orange</SelectItem>
-                  <SelectItem value="ultraman">Ultraman</SelectItem>
-                  <SelectItem value="zelda">Zelda</SelectItem>
-                  <SelectItem value="minecraft">Minecraft</SelectItem>
+                <SelectContent className="rounded-2xl border-2 border-primary/20">
+                  <SelectItem value="lime">Bright</SelectItem>
+                  <SelectItem value="blue">Ocean</SelectItem>
+                  <SelectItem value="pink">Candy</SelectItem>
+                  <SelectItem value="orange">Sunset</SelectItem>
+                  <SelectItem value="ultraman">Hero</SelectItem>
+                  <SelectItem value="zelda">Legend</SelectItem>
+                  <SelectItem value="minecraft">Blocks</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
         </div>
 
-        <footer className="text-center text-muted-foreground text-sm pt-8 opacity-60">
-          Just a metronome • Designed for little musicians • SimpleBeats v1.1
+        <footer className="w-full text-center text-muted-foreground/50 text-xs py-8 font-medium">
+          Just a metronome • Designed with ❤️ for little musicians • SimpleBeats v1.2
         </footer>
       </div>
     </div>
