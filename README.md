@@ -1,6 +1,6 @@
 # SimpleBeats Metronome
 
-A precise and fun rhythm learning app designed specifically for children. Built with Next.js, Tailwind CSS, and Capacitor.
+A precise, playful, and tactile rhythm learning app designed specifically for children. Built with Next.js, Tailwind CSS, and Capacitor.
 
 ## 🚀 Getting Started (Web Development)
 
@@ -33,74 +33,58 @@ Open [http://localhost:9002](http://localhost:9002) in your browser to see the a
 
 ## 📱 Android APK Build Guide
 
-To transform this web application into a native Android APK, we use **Capacitor**.
+To transform this web application into a native Android APK, follow these steps.
 
-### 1. Prerequisites & Environment Setup
+### 1. Prerequisites (Linux/Ubuntu)
 
-Before building the APK, you must install and configure these tools on your local computer:
+Ensure you have Android Studio installed. If you installed it via Snap, you must set the following environment variable in your terminal:
 
-#### A. Node.js
-- Download and install **Node.js (v18 or higher)**.
-
-#### B. Java Development Kit (JDK)
-- Install **OpenJDK 17 or 21**. 
-- Ensure your `JAVA_HOME` environment variable is set.
-
-#### C. Android Studio
-1. Download and install **Android Studio**.
-2. Install the **Android SDK** and **Platform-Tools**.
-3. Add the Android SDK `platform-tools` folder to your system's `PATH`.
-
----
+```bash
+export CAPACITOR_ANDROID_STUDIO_PATH="/snap/bin/android-studio"
+```
 
 ### 2. Build Steps
 
 #### Step A: Build the Static Web Files
-Next.js must generate a standalone version of the app.
 ```bash
 npm run static-build
 ```
-This creates an `out/` folder.
+This creates the required `out/` folder.
 
-#### Step B: Sync with Android Platform
-If this is your first time:
+#### Step B: Add Android Platform (First Time Only)
 ```bash
 npm run cap-add-android
 ```
-Then sync the assets:
+
+#### Step C: Sync Assets
 ```bash
 npm run cap-sync
 ```
 
-#### Step C: Open in Android Studio
+#### Step D: Open in Android Studio
 ```bash
 npm run cap-open-android
 ```
 
 ---
 
-### 🎨 How to create an Android Icon
+### 🎨 How to apply the Android App Icon
 
-To create the native app icon:
-1. Prepare a high-resolution square image (1024x1024px).
-2. Install `@capacitor/assets`:
+To use the cute metronome image as your actual app icon:
+
+1. **Save the image:** Save the high-resolution square icon image as `assets/logo.png` in the project root.
+2. **Generate Assets:** Run the following command to automatically generate all required Android icon sizes:
    ```bash
-   npm install @capacitor/assets --save-dev
+   npx @capacitor/assets generate --android
    ```
-3. Place your image as `assets/logo.png`.
-4. Run the generation tool:
-   ```bash
-   npx capacitor-assets generate --android
-   ```
-This will automatically generate and place all required icon sizes in the `android/app/src/main/res` directory.
+3. **Sync again:** Run `npm run cap-sync` to ensure the new icons are copied to the Android project.
 
 ---
 
-### 4. Creating and Installing the APK
+### 📦 Creating the APK
 
 1. In Android Studio, wait for Gradle Sync to finish.
 2. Go to **Build** > **Build Bundle(s) / APK(s)** > **Build APK(s)**.
-3. Locate the `app-debug.apk` and copy it to your phone.
-4. Enable **USB Debugging** on your phone and run directly from Android Studio, or manually install the APK file.
+3. Locate the `app-debug.apk` and copy it to your phone for installation.
 
 *Designed with ❤️ for little musicians by SimpleBeats.*
