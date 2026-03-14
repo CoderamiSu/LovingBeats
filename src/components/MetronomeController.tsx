@@ -76,8 +76,13 @@ export default function MetronomeController() {
         const settings = JSON.parse(saved);
         if (settings.bpm) setBpm(settings.bpm);
         if (settings.timeSignature) setTimeSignature(settings.timeSignature);
-        if (settings.themeColor) setThemeColor(settings.themeColor);
-        if (settings.soundProfile) setSoundProfile(settings.soundProfile);
+        // Validate themeColor exists in COLOR_THEMES
+        if (settings.themeColor && COLOR_THEMES[settings.themeColor as keyof typeof COLOR_THEMES]) {
+          setThemeColor(settings.themeColor as keyof typeof COLOR_THEMES);
+        }
+        if (settings.soundProfile && SOUND_PROFILES[settings.soundProfile as keyof typeof SOUND_PROFILES]) {
+          setSoundProfile(settings.soundProfile as keyof typeof SOUND_PROFILES);
+        }
       } catch (e) {
         console.error("Failed to parse saved settings", e);
       }
@@ -177,7 +182,7 @@ export default function MetronomeController() {
     setBpm((prev) => Math.min(Math.max(prev + delta, 40), 240));
   };
 
-  const currentTheme = COLOR_THEMES[themeColor];
+  const currentTheme = COLOR_THEMES[themeColor] || COLOR_THEMES.playtime;
   if (!isLoaded) return null;
 
   return (
