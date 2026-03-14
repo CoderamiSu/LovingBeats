@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Play, Square, Plus, Minus, Palette, Volume2, Music } from "lucide-react";
+import { Play, Square, Plus, Minus, Palette, Volume2, Music, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { BeatIndicator } from "./BeatIndicator";
@@ -65,6 +65,8 @@ const SOUND_PROFILES = {
   electronic: { accent: 600, normal: 400, type: 'square' as OscillatorType },
 };
 
+const STORAGE_KEY = "simplebeats_settings";
+
 export default function MetronomeController() {
   const [bpm, setBpm] = useState(120);
   const [timeSignature, setTimeSignature] = useState("4/4");
@@ -72,6 +74,7 @@ export default function MetronomeController() {
   const [currentBeat, setCurrentBeat] = useState(0);
   const [themeColor, setThemeColor] = useState<keyof typeof COLOR_THEMES>("zelda");
   const [soundProfile, setSoundProfile] = useState<keyof typeof SOUND_PROFILES>("classic");
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const audioContext = useRef<AudioContext | null>(null);
   const nextNoteTime = useRef(0.0);
@@ -83,6 +86,31 @@ export default function MetronomeController() {
   const bpmRef = useRef(bpm);
   const beatsPerMeasureRef = useRef(beatsPerMeasure);
   const soundProfileRef = useRef(soundProfile);
+
+  // Load settings on mount
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const settings = JSON.parse(saved);
+        if (settings.bpm) setBpm(settings.bpm);
+        if (settings.timeSignature) setTimeSignature(settings.timeSignature);
+        if (settings.themeColor) setThemeColor(settings.themeColor);
+        if (settings.soundProfile) setSoundProfile(settings.soundProfile);
+      } catch (e) {
+        console.error("Failed to parse saved settings", e);
+      }
+    }
+    setIsLoaded(true);
+  }, []);
+
+  // Save settings on change
+  useEffect(() => {
+    if (isLoaded) {
+      const settings = { bpm, timeSignature, themeColor, soundProfile };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+    }
+  }, [bpm, timeSignature, themeColor, soundProfile, isLoaded]);
 
   useEffect(() => {
     bpmRef.current = bpm;
@@ -200,6 +228,8 @@ export default function MetronomeController() {
 
   const currentTheme = COLOR_THEMES[themeColor];
 
+  if (!isLoaded) return null;
+
   return (
     <div 
       className="w-full min-h-screen bg-background transition-colors duration-500 ease-in-out flex flex-col items-center relative overflow-hidden"
@@ -241,31 +271,55 @@ export default function MetronomeController() {
 
         <div className="space-y-10">
           <div className="space-y-6">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-14 w-14 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10 transition-colors duration-500"
-                onClick={() => adjustBpm(-5)}
-              >
-                <Minus className="w-8 h-8" />
-              </Button>
-              <Slider
-                value={[bpm]}
-                onValueChange={(vals) => setBpm(vals[0])}
-                min={40}
-                max={240}
-                step={1}
-                className="flex-1"
-              />
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-14 w-14 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10 transition-colors duration-500"
-                onClick={() => adjustBpm(5)}
-              >
-                <Plus className="w-8 h-8" />
-              </Button>
+            <div className="flex flex-col gap-6">
+              <div className="flex items-center justify-center gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-12 w-12 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10"
+                  onClick={() => adjustBpm(-5)}
+                >
+                  <ChevronsLeft className="w-6 h-6" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-12 w-12 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10"
+                  onClick={() => adjustBpm(-1)}
+                >
+                  <Minus className="w-6 h-6" />
+                </Button>
+                
+                <Slider
+                  value={[bpm]}
+                  onValueChange={(vals) => setBpm(vals[0])}
+                  min={40}
+                  max={240}
+                  step={1}
+                  className="flex-1 mx-4"
+                />
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-12 w-12 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10"
+                  onClick={() => adjustBpm(1)}
+                >
+                  <Plus className="w-6 h-6" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-12 w-12 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10"
+                  onClick={() => adjustBpm(5)}
+                >
+                  <ChevronsRight className="w-6 h-6" />
+                </Button>
+              </div>
+              <div className="flex justify-between text-xs text-muted-foreground px-2">
+                <span>Fine (+/- 1)</span>
+                <span>Coarse (+/- 5)</span>
+              </div>
             </div>
           </div>
 

@@ -33,26 +33,23 @@ Open [http://localhost:9002](http://localhost:9002) in your browser to see the a
 
 ## 📱 Android APK Build Guide
 
-To transform this web application into a native Android APK, we use **Capacitor**. This allows the app to run locally on your phone with native performance.
+To transform this web application into a native Android APK, we use **Capacitor**.
 
 ### 1. Prerequisites & Environment Setup
 
 Before building the APK, you must install and configure these tools on your local computer:
 
 #### A. Node.js
-- Download and install **Node.js (v18 or higher)** from [nodejs.org](https://nodejs.org/).
-- Verify installation by running `node -v` in your terminal.
+- Download and install **Node.js (v18 or higher)**.
 
 #### B. Java Development Kit (JDK)
 - Install **OpenJDK 17 or 21**. 
-- We recommend using [Adoptium (Temurin)](https://adoptium.net/).
-- Ensure your `JAVA_HOME` environment variable is set to the JDK installation path.
+- Ensure your `JAVA_HOME` environment variable is set.
 
 #### C. Android Studio
-1. Download and install **Android Studio** from [developer.android.com](https://developer.android.com/studio).
-2. During setup, ensure you install the **Android SDK** and **Android SDK Platform-Tools**.
-3. Open Android Studio, go to **Settings > Languages & Frameworks > Android SDK** and ensure at least one SDK platform (e.g., Android 14.0) is installed.
-4. Add the Android SDK `platform-tools` folder to your system's `PATH`.
+1. Download and install **Android Studio**.
+2. Install the **Android SDK** and **Platform-Tools**.
+3. Add the Android SDK `platform-tools` folder to your system's `PATH`.
 
 ---
 
@@ -63,47 +60,47 @@ Next.js must generate a standalone version of the app.
 ```bash
 npm run static-build
 ```
-This creates an `out/` folder containing the static HTML, CSS, and JS.
+This creates an `out/` folder.
 
 #### Step B: Sync with Android Platform
-If this is your first time building for Android, you must add the platform first:
+If this is your first time:
 ```bash
 npm run cap-add-android
 ```
-
-Then, sync the web assets into the native Android project:
+Then sync the assets:
 ```bash
 npm run cap-sync
 ```
 
 #### Step C: Open in Android Studio
-Launch the native project in Android Studio to perform the final build.
 ```bash
 npm run cap-open-android
 ```
 
-> **Note for Linux/Snap Users:** If you get an error saying "Unable to launch Android Studio", run this command in your terminal before opening:
-> `export CAPACITOR_ANDROID_STUDIO_PATH="/snap/bin/android-studio"`
+---
+
+### 🎨 How to create an Android Icon
+
+To create the native app icon:
+1. Prepare a high-resolution square image (1024x1024px).
+2. Install `@capacitor/assets`:
+   ```bash
+   npm install @capacitor/assets --save-dev
+   ```
+3. Place your image as `assets/logo.png`.
+4. Run the generation tool:
+   ```bash
+   npx capacitor-assets generate --android
+   ```
+This will automatically generate and place all required icon sizes in the `android/app/src/main/res` directory.
 
 ---
 
-### 3. Creating the APK in Android Studio
+### 4. Creating and Installing the APK
 
-1. Wait for Android Studio to finish "Gradle Sync" (check the progress bar at the bottom).
-2. In the top menu, go to **Build** > **Build Bundle(s) / APK(s)** > **Build APK(s)**.
-3. Once the build completes, click **"locate"** in the notification popup to find your `app-debug.apk`.
+1. In Android Studio, wait for Gradle Sync to finish.
+2. Go to **Build** > **Build Bundle(s) / APK(s)** > **Build APK(s)**.
+3. Locate the `app-debug.apk` and copy it to your phone.
+4. Enable **USB Debugging** on your phone and run directly from Android Studio, or manually install the APK file.
 
-### 4. How to Install on your Android Device
-
-#### Method A: Direct Run (Recommended)
-1. Connect your Android phone to your computer via USB.
-2. Enable **USB Debugging** on your phone (Settings > Developer Options).
-3. In Android Studio, select your phone from the device dropdown in the toolbar and click the **Run** button (green play icon).
-
-#### Method B: Manual Sideload
-1. Copy the `app-debug.apk` file to your phone's storage.
-2. Open a **File Manager** on your phone, find the APK, and tap it to install.
-3. If prompted, allow "Install apps from unknown sources".
-
----
 *Designed with ❤️ for little musicians by SimpleBeats.*
