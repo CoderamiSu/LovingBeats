@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Play, Square, Plus, Minus, Palette, Volume2, Music, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { Play, Square, Palette, Volume2, Music } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { BeatIndicator } from "./BeatIndicator";
@@ -271,54 +271,54 @@ export default function MetronomeController() {
 
         <div className="space-y-10">
           <div className="space-y-6">
-            <div className="flex flex-col gap-6">
-              <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-center gap-4">
+              {/* Decrement Stack */}
+              <div className="flex flex-col gap-3">
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-12 w-12 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10"
+                  className="h-14 w-14 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10 text-lg font-bold"
                   onClick={() => adjustBpm(-5)}
                 >
-                  <ChevronsLeft className="w-6 h-6" />
+                  -5
                 </Button>
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-12 w-12 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10"
+                  className="h-14 w-14 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10 text-lg font-bold"
                   onClick={() => adjustBpm(-1)}
                 >
-                  <Minus className="w-6 h-6" />
-                </Button>
-                
-                <Slider
-                  value={[bpm]}
-                  onValueChange={(vals) => setBpm(vals[0])}
-                  min={40}
-                  max={240}
-                  step={1}
-                  className="flex-1 mx-4"
-                />
-
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-12 w-12 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10"
-                  onClick={() => adjustBpm(1)}
-                >
-                  <Plus className="w-6 h-6" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-12 w-12 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10"
-                  onClick={() => adjustBpm(5)}
-                >
-                  <ChevronsRight className="w-6 h-6" />
+                  -1
                 </Button>
               </div>
-              <div className="flex justify-between text-xs text-muted-foreground px-2">
-                <span>Fine (+/- 1)</span>
-                <span>Coarse (+/- 5)</span>
+              
+              <Slider
+                value={[bpm]}
+                onValueChange={(vals) => setBpm(vals[0])}
+                min={40}
+                max={240}
+                step={1}
+                className="flex-1 h-12"
+              />
+
+              {/* Increment Stack */}
+              <div className="flex flex-col gap-3">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-14 w-14 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10 text-lg font-bold"
+                  onClick={() => adjustBpm(5)}
+                >
+                  +5
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-14 w-14 rounded-full border-2 text-primary border-primary/20 hover:bg-primary/10 text-lg font-bold"
+                  onClick={() => adjustBpm(1)}
+                >
+                  +1
+                </Button>
               </div>
             </div>
           </div>
