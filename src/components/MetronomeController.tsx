@@ -16,46 +16,46 @@ import {
 
 const COLOR_THEMES = {
   playtime: {
-    primary: "48 85% 65%", // Softened Yellow
-    background: "195 60% 96%", // Very Soft Sky Blue
+    primary: "48 90% 70%", // Softer Yellow
+    background: "195 70% 97%", // Very Soft Sky Blue
     card: "0 0% 100%",
-    secondary: "0 70% 70%", // Softened Red
+    secondary: "0 75% 75%", // Softer Red
   },
   candy: {
-    primary: "330 75% 75%", // Soft Pink
-    background: "330 30% 97%", 
+    primary: "330 80% 80%", // Gentle Pink
+    background: "330 40% 98%", 
     card: "0 0% 100%",
-    secondary: "280 60% 75%", // Soft Lavender
+    secondary: "280 65% 80%", // Gentle Lavender
   },
   ocean: {
-    primary: "210 70% 70%", // Soft Ocean Blue
-    background: "210 40% 94%",
+    primary: "200 75% 75%", // Gentle Blue
+    background: "200 50% 96%",
     card: "0 0% 100%",
-    secondary: "180 50% 50%", // Soft Teal
+    secondary: "170 60% 75%", // Gentle Mint
   },
   blocks: {
-    primary: "85 55% 60%", // Soft Grass Green
-    background: "25 30% 94%", // Sand/Cream
+    primary: "90 60% 70%", // Gentle Grass
+    background: "30 40% 97%", // Cream
     card: "0 0% 100%",
-    secondary: "195 60% 70%", // Soft Sky
+    secondary: "200 70% 80%", // Gentle Sky
   },
   ultraman: {
-    primary: "0 75% 65%", // Soft Hero Red
-    background: "210 20% 95%", // Soft Silver/White
+    primary: "0 80% 75%", // Softened Hero Red
+    background: "210 30% 98%", // Soft Silver
     card: "0 0% 100%",
-    secondary: "210 15% 70%", // Muted Silver
+    secondary: "210 20% 85%", // Muted Silver
   },
   zelda: {
-    primary: "142 50% 45%", // Forest Green (Softened)
-    background: "45 35% 94%", // Parchment
+    primary: "145 55% 65%", // Soft Forest
+    background: "50 45% 97%", // Soft Parchment
     card: "0 0% 100%",
-    secondary: "45 75% 60%", // Triforce Gold (Softened)
+    secondary: "45 80% 75%", // Soft Gold
   },
   minecraft: {
-    primary: "100 45% 55%", // Pixel Green
-    background: "0 0% 92%", // Stone Gray
+    primary: "105 50% 70%", // Soft Pixel Green
+    background: "0 0% 95%", // Soft Stone
     card: "0 0% 100%",
-    secondary: "25 40% 55%", // Dirt Brown
+    secondary: "30 45% 70%", // Soft Dirt
   },
 };
 
@@ -65,7 +65,7 @@ const SOUND_PROFILES = {
   electronic: { accent: 600, normal: 400, type: 'square' as OscillatorType },
 };
 
-const STORAGE_KEY = "simplebeats_settings";
+const STORAGE_KEY = "simplebeats_settings_v3";
 
 export default function MetronomeController() {
   const [bpm, setBpm] = useState(120);
@@ -215,9 +215,9 @@ export default function MetronomeController() {
       } as React.CSSProperties}
     >
       {/* Playful Background Elements */}
-      <div className="absolute top-10 left-10 text-primary/20 floating" style={{ animationDelay: '0s' }}><Star size={64} fill="currentColor" /></div>
-      <div className="absolute top-40 right-10 text-secondary/20 floating" style={{ animationDelay: '1s' }}><Heart size={48} fill="currentColor" /></div>
-      <div className="absolute bottom-20 left-20 text-accent/30 floating" style={{ animationDelay: '2s' }}><Music size={56} /></div>
+      <div className="absolute top-10 left-10 text-primary/10 floating" style={{ animationDelay: '0s' }}><Star size={64} fill="currentColor" /></div>
+      <div className="absolute top-40 right-10 text-secondary/10 floating" style={{ animationDelay: '1s' }}><Heart size={48} fill="currentColor" /></div>
+      <div className="absolute bottom-20 left-20 text-accent/20 floating" style={{ animationDelay: '2s' }}><Music size={56} /></div>
       
       <header className="w-full py-6 flex flex-col items-center justify-center gap-2 z-10 floating">
         <div className="bg-primary p-4 rounded-[2.5rem] shadow-xl clay-button rotate-3 border-4 border-white">
@@ -253,21 +253,21 @@ export default function MetronomeController() {
 
         <div className="w-full space-y-10 pt-4">
           <div className="flex items-center justify-center gap-6">
-            {/* Minus Buttons on the Left */}
+            {/* Plus Buttons on the Left */}
             <div className="flex flex-col gap-6">
               <Button
                 variant="outline"
-                className="h-16 w-16 rounded-3xl border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
-                onClick={() => adjustBpm(-1)}
+                className="h-16 w-16 rounded-full border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
+                onClick={() => adjustBpm(1)}
               >
-                -1
+                +1
               </Button>
               <Button
                 variant="outline"
-                className="h-16 w-16 rounded-3xl border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
-                onClick={() => adjustBpm(-5)}
+                className="h-16 w-16 rounded-full border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
+                onClick={() => adjustBpm(5)}
               >
-                -5
+                +5
               </Button>
             </div>
             
@@ -282,21 +282,21 @@ export default function MetronomeController() {
               />
             </div>
 
-            {/* Plus Buttons on the Right */}
+            {/* Minus Buttons on the Right */}
             <div className="flex flex-col gap-6">
               <Button
                 variant="outline"
-                className="h-16 w-16 rounded-3xl border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
-                onClick={() => adjustBpm(1)}
+                className="h-16 w-16 rounded-full border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
+                onClick={() => adjustBpm(-1)}
               >
-                +1
+                -1
               </Button>
               <Button
                 variant="outline"
-                className="h-16 w-16 rounded-3xl border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
-                onClick={() => adjustBpm(5)}
+                className="h-16 w-16 rounded-full border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-white clay-button"
+                onClick={() => adjustBpm(-5)}
               >
-                +5
+                -5
               </Button>
             </div>
           </div>
