@@ -5,7 +5,6 @@ import { Play, Square, Palette, Volume2, Music, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { BeatIndicator } from "./BeatIndicator";
-import { PracticePromptCard } from "./PracticePromptCard";
 import { cn } from "@/lib/utils";
 import {
   Select,
@@ -211,7 +210,6 @@ export default function MetronomeController() {
         '--ring': currentTheme.primary,
       } as React.CSSProperties}
     >
-      {/* Playful Background Elements */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -225,7 +223,6 @@ export default function MetronomeController() {
       </header>
 
       <div className="flex-1 w-full max-w-md space-y-6 z-10 flex flex-col items-center">
-        {/* Main Display Area */}
         <div className="w-full bg-card rounded-[3rem] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border-4 border-white/5 transition-all duration-500 group overflow-hidden relative">
           <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
           
@@ -247,44 +244,8 @@ export default function MetronomeController() {
           </div>
         </div>
 
-        {/* AI Coach Card */}
-        <div className="w-full px-2">
-          <PracticePromptCard bpm={bpm} timeSignature={timeSignature} />
-        </div>
-
-        {/* Controls Section */}
         <div className="w-full space-y-10 pt-4">
           <div className="flex items-center justify-center gap-6">
-            {/* Decrement Stack */}
-            <div className="flex flex-col gap-4">
-              <Button
-                variant="outline"
-                className="h-16 w-16 rounded-[1.5rem] border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-card shadow-lg active:scale-90 transition-all"
-                onClick={() => adjustBpm(-1)}
-              >
-                -1
-              </Button>
-              <Button
-                variant="outline"
-                className="h-16 w-16 rounded-[1.5rem] border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-card shadow-lg active:scale-90 transition-all"
-                onClick={() => adjustBpm(-5)}
-              >
-                -5
-              </Button>
-            </div>
-            
-            <div className="flex-1 h-32 flex items-center px-4 bg-card/40 rounded-[2rem] border-2 border-white/5">
-              <Slider
-                value={[bpm]}
-                onValueChange={(vals) => setBpm(vals[0])}
-                min={40}
-                max={240}
-                step={1}
-                className="h-8"
-              />
-            </div>
-
-            {/* Increment Stack */}
             <div className="flex flex-col gap-4">
               <Button
                 variant="outline"
@@ -299,6 +260,34 @@ export default function MetronomeController() {
                 onClick={() => adjustBpm(5)}
               >
                 +5
+              </Button>
+            </div>
+            
+            <div className="flex-1 h-32 flex items-center px-4 bg-card/40 rounded-[2rem] border-2 border-white/5">
+              <Slider
+                value={[bpm]}
+                onValueChange={(vals) => setBpm(vals[0])}
+                min={40}
+                max={240}
+                step={1}
+                className="h-8"
+              />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <Button
+                variant="outline"
+                className="h-16 w-16 rounded-[1.5rem] border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-card shadow-lg active:scale-90 transition-all"
+                onClick={() => adjustBpm(-1)}
+              >
+                -1
+              </Button>
+              <Button
+                variant="outline"
+                className="h-16 w-16 rounded-[1.5rem] border-4 text-primary border-primary/20 hover:bg-primary/10 text-xl font-black bg-card shadow-lg active:scale-90 transition-all"
+                onClick={() => adjustBpm(-5)}
+              >
+                -5
               </Button>
             </div>
           </div>
