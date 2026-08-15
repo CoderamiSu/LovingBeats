@@ -1,5 +1,4 @@
-"use client";
-
+import { memo } from "react";
 import { cn } from "@/lib/utils";
 
 interface BeatIndicatorProps {
@@ -8,7 +7,7 @@ interface BeatIndicatorProps {
   active: boolean;
 }
 
-export function BeatIndicator({ currentBeat, totalBeats, active }: BeatIndicatorProps) {
+export const BeatIndicator = memo(function BeatIndicator({ currentBeat, totalBeats, active }: BeatIndicatorProps) {
   return (
     <div className="flex justify-center items-center gap-5 py-6">
       {Array.from({ length: totalBeats }).map((_, i) => (
@@ -24,4 +23,4 @@ export function BeatIndicator({ currentBeat, totalBeats, active }: BeatIndicator
       ))}
     </div>
   );
-}
+});

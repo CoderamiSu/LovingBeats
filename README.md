@@ -17,17 +17,12 @@ cd SimpleBeats
 npm install
 ```
 
-### 3. Set up Environment Variables
-Create a `.env` file in the root directory and add your Google AI API key for Genkit features:
-```env
-GOOGLE_GENAI_API_KEY=your_api_key_here
-```
-
-### 4. Run the Development Server
+### 3. Run the Development Server
 ```bash
 npm run dev
 ```
 Open [http://localhost:9002](http://localhost:9002) in your browser to see the app.
+
 
 ---
 

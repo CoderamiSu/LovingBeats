@@ -80,6 +80,7 @@ export default function MetronomeController() {
   const nextNoteTime = useRef(0.0);
   const beatNumber = useRef(0);
   const timerID = useRef<number | null>(null);
+  const visualTimers = useRef<number[]>([]);
   const beatsPerMeasure = parseInt(timeSignature.split("/")[0]);
   const wakeLock = useRef<any>(null);
 
@@ -123,18 +124,21 @@ export default function MetronomeController() {
   }, [bpm, beatsPerMeasure, soundProfile]);
 
   const requestWakeLock = useCallback(async () => {
-    if (typeof window !== 'undefined' && 'wakeLock' in navigator) {
+    if (typeof window !== 'undefined' && 'wakeLock' in navigator && !wakeLock.current) {
       try {
         wakeLock.current = await (navigator as any).wakeLock.request('screen');
+        wakeLock.current.addEventListener('release', () => {
+          wakeLock.current = null;
+        });
       } catch (err: any) {
-        console.warn(`Wake Lock could not be acquired: ${err.message}`);
+        console.warn(`Wake Lock could not be acquired: ${err?.message}`);
       }
     }
   }, []);
 
   const releaseWakeLock = useCallback(() => {
     if (wakeLock.current !== null) {
-      wakeLock.current.release().then(() => {
+      wakeLock.current.release().catch(() => {}).finally(() => {
         wakeLock.current = null;
       });
     }
@@ -149,6 +153,23 @@ export default function MetronomeController() {
     return () => releaseWakeLock();
   }, [isPlaying, requestWakeLock, releaseWakeLock]);
 
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && isPlaying) {
+        requestWakeLock();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isPlaying, requestWakeLock]);
+
+  const clearVisualTimers = () => {
+    visualTimers.current.forEach((id) => clearTimeout(id));
+    visualTimers.current = [];
+  };
+
   const scheduleNote = useCallback((beatNum: number, time: number) => {
     if (!audioContext.current) return;
     const osc = audioContext.current.createOscillator();
@@ -156,8 +177,7 @@ export default function MetronomeController() {
     const profile = SOUND_PROFILES[soundProfileRef.current];
     osc.type = profile.type;
     osc.frequency.value = beatNum % beatsPerMeasureRef.current === 0 ? profile.accent : profile.normal;
-    envelope.gain.value = 1;
-    envelope.gain.exponentialRampToValueAtTime(1, time + 0.001);
+    envelope.gain.setValueAtTime(1, time);
     envelope.gain.exponentialRampToValueAtTime(0.001, time + (soundProfileRef.current === 'woodblock' ? 0.05 : 0.1));
     osc.connect(envelope);
     envelope.connect(audioContext.current.destination);
@@ -168,13 +188,25 @@ export default function MetronomeController() {
   const scheduler = useCallback(() => {
     if (!audioContext.current) return;
     while (nextNoteTime.current < audioContext.current.currentTime + 0.1) {
-      scheduleNote(beatNumber.current, nextNoteTime.current);
+      const scheduledTime = nextNoteTime.current;
+      const currentLocalBeat = beatNumber.current % beatsPerMeasureRef.current;
+      scheduleNote(beatNumber.current, scheduledTime);
+
+      const delayMs = Math.max(0, (scheduledTime - audioContext.current.currentTime) * 1000);
+      const visualTimer = window.setTimeout(() => {
+        setCurrentBeat(currentLocalBeat);
+      }, delayMs);
+      visualTimers.current.push(visualTimer);
+
       const secondsPerBeat = 60.0 / bpmRef.current;
       nextNoteTime.current += secondsPerBeat;
-      const currentLocalBeat = beatNumber.current % beatsPerMeasureRef.current;
-      setTimeout(() => setCurrentBeat(currentLocalBeat), 0);
       beatNumber.current++;
     }
+
+    if (visualTimers.current.length > 50) {
+      visualTimers.current = visualTimers.current.slice(-20);
+    }
+
     timerID.current = window.setTimeout(scheduler, 25.0);
   }, [scheduleNote]);
 
@@ -185,6 +217,7 @@ export default function MetronomeController() {
     if (isPlaying) {
       setIsPlaying(false);
       if (timerID.current) clearTimeout(timerID.current);
+      clearVisualTimers();
       setCurrentBeat(0);
       beatNumber.current = 0;
     } else {
@@ -192,10 +225,22 @@ export default function MetronomeController() {
         audioContext.current.resume();
       }
       setIsPlaying(true);
+      clearVisualTimers();
       nextNoteTime.current = audioContext.current.currentTime;
       scheduler();
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (timerID.current) clearTimeout(timerID.current);
+      clearVisualTimers();
+      releaseWakeLock();
+      if (audioContext.current && audioContext.current.state !== 'closed') {
+        audioContext.current.close().catch(() => {});
+      }
+    };
+  }, [releaseWakeLock]);
 
   const adjustBpm = (delta: number) => {
     setBpm((prev) => Math.min(Math.max(prev + delta, 40), 240));

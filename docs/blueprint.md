@@ -6,7 +6,6 @@
 - BPM Slider Adjustment: An intuitive slider for quickly and smoothly adjusting the beats per minute (BPM).
 - Customizable Time Signatures: Ability to set various time signatures (e.g., 4/4, 3/4) to suit different musical pieces.
 - Visual Beat Indicator: A clear, dynamic visual indicator that illuminates or changes with each beat for easy tracking.
-- Practice Prompt Generator: An AI-powered tool that generates simple rhythm exercises or practice prompts based on the current BPM and time signature, suitable for young learners.
 
 ## Style Guidelines:
 
